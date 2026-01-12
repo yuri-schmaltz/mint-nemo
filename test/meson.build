@@ -35,3 +35,12 @@ test('Icon Text Cache test',
   ),
   args: []
 )
+
+  test('Lazy Thumbnail Loader test',
+    executable('test-lazy-thumbnail-loader',
+      [ 'test-lazy-thumbnail-loader.c' ],
+      include_directories: [ rootInclude, ],
+      dependencies: [ gtk, nemo_private ],
+    ),
+    args: []
+  )
