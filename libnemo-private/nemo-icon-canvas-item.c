@@ -740,11 +740,11 @@ in_single_click_mode (void)
 }
 
 
-/* Keep these for a bit while we work on performance of draw_or_measure_label_text. */
-/*
-  #define PERFORMANCE_TEST_DRAW_DISABLE
-  #define PERFORMANCE_TEST_MEASURE_DISABLE
-*/
+/* Note: Obsolete performance test macros removed in v6.7.
+   PERFORMANCE_TEST_DRAW_DISABLE and PERFORMANCE_TEST_MEASURE_DISABLE 
+   were used during initial Eazel development for profiling label rendering.
+   If performance profiling of icon rendering becomes necessary in the future,
+   use external tools (perf, gprof, valgrind) or GTK_DEBUG environment variable. */
 
 /* This gets the size of the layout from the position of the layout.
  * This means that if the layout is right aligned we get the full width
@@ -907,15 +907,6 @@ measure_label_text (NemoIconCanvasItem *item)
 		return;
 	}
 
-#ifdef PERFORMANCE_TEST_MEASURE_DISABLE
-	/* fake out the width */
-	details->text_width = 80;
-	details->text_height = 20;
-	details->text_height_for_layout = 20;
-	details->text_height_for_entire_text = 20;
-	return;
-#endif
-
 	editable_width = 0;
 	editable_height = 0;
 	editable_height_for_layout = 0;
@@ -1022,10 +1013,6 @@ draw_label_text (NemoIconCanvasItem *item,
 	int max_text_width;
 	gdouble frame_w, frame_h, frame_x, frame_y;
 	gboolean draw_frame = TRUE;
-
-#ifdef PERFORMANCE_TEST_DRAW_DISABLE
-	return;
-#endif
 
 	details = item->details;
 
