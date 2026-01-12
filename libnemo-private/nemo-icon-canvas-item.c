@@ -38,6 +38,8 @@
 #include <eel/eel-string.h>
 #include <eel/eel-accessibility.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+/* Text measurement cache to avoid repeated Pango computations */
+#include "nemo-icon-text-cache.h"
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <glib/gi18n.h>
@@ -119,6 +121,9 @@ struct NemoIconCanvasItemDetails {
     guint is_pinned : 1;
     guint fav_unavailable : 1;
 
+	/* Text measurement cache for performance */
+	NemoIconTextCache *text_cache;
+
 	/* Cached PangoLayouts. Only used if the icon is visible */
 	PangoLayout *editable_text_layout;
 	PangoLayout *additional_text_layout;
@@ -188,6 +193,12 @@ nemo_icon_canvas_item_init (NemoIconCanvasItem *icon_item)
 {
 	icon_item->details = G_TYPE_INSTANCE_GET_PRIVATE ((icon_item), NEMO_TYPE_ICON_CANVAS_ITEM, NemoIconCanvasItemDetails);
 	nemo_icon_canvas_item_invalidate_label_size (icon_item);
+
+	/* Initialize text measurement cache with reasonable defaults */
+	if (icon_item->details) {
+		/* Cache up to 1000 entries, no TTL expiry */
+		icon_item->details->text_cache = nemo_icon_text_cache_new (1000, 0);
+	}
 }
 
 static void
@@ -227,6 +238,12 @@ nemo_icon_canvas_item_finalize (GObject *object)
 		g_object_unref (details->additional_text_layout);
 	}
 
+	/* Free text measurement cache */
+	if (details->text_cache != NULL) {
+		nemo_icon_text_cache_free (details->text_cache);
+		details->text_cache = NULL;
+	}
+
 	G_OBJECT_CLASS (nemo_icon_canvas_item_parent_class)->finalize (object);
 }
 
@@ -262,6 +279,11 @@ nemo_icon_canvas_item_invalidate_label_size (NemoIconCanvasItem *item)
 		pango_layout_context_changed (item->details->additional_text_layout);
 	}
 
+	/* Clear text measurement cache when layout or font context changes */
+	if (item->details->text_cache != NULL) {
+		nemo_icon_text_cache_clear (item->details->text_cache);
+	}
+
 	nemo_icon_canvas_item_invalidate_bounds_cache (item);
 	item->details->text_width = -1;
 	item->details->text_height = -1;
@@ -291,6 +313,13 @@ nemo_icon_canvas_item_set_property (GObject        *object,
 		if (g_strcmp0 (details->editable_text,
 				g_value_get_string (value)) == 0) {
 			return;
+		}
+
+		/* Invalidate cache entry for old filename before replacing */
+		if (details->text_cache != NULL && details->editable_text != NULL) {
+			
+			nemo_icon_text_cache_invalidate_filename (details->text_cache,
+								  details->editable_text);
 		}
 
 		g_free (details->editable_text);
@@ -898,6 +927,25 @@ measure_label_text (NemoIconCanvasItem *item)
 	have_editable = details->editable_text != NULL && details->editable_text[0] != '\0';
 	have_additional = details->additional_text != NULL && details->additional_text[0] != '\0';
 
+	/* Attempt cache lookup only when we have a single editable text and no additional text
+	 * to ensure cached dimensions match displayed layout. */
+	if (have_editable && !have_additional && details->text_cache != NULL) {
+		NemoIconTextMeasurement m;
+		int max_width_cached = (int) floor (nemo_icon_canvas_item_get_max_text_width (item));
+		if (nemo_icon_text_cache_lookup (details->text_cache,
+										 details->editable_text,
+										 max_width_cached,
+										 &m)) {
+			details->editable_text_height = m.text_height;
+			details->text_width = m.text_width;
+			details->text_dx = m.text_dx;
+			details->text_height = m.text_height;
+			details->text_height_for_layout = m.text_height_for_layout;
+			details->text_height_for_entire_text = m.text_height_for_entire_text;
+			return;
+		}
+	}
+
 	/* No font or no text, then do no work. */
 	if (!have_editable && !have_additional) {
 		details->text_height = 0;
@@ -985,6 +1033,24 @@ measure_label_text (NemoIconCanvasItem *item)
         /* extra to make it look nicer */
         details->text_width += TEXT_BACK_PADDING_X*2;
     }
+
+	if (!have_additional && editable_layout) {
+		/* Cache measurement for pure editable text scenarios */
+		NemoIconTextMeasurement m = {
+			.text_width = details->text_width,
+			.text_height = editable_height,
+			.text_dx = editable_dx,
+			.text_height_for_layout = editable_height_for_layout,
+			.text_height_for_entire_text = editable_height_for_entire_text
+		};
+		int max_width_cached = (int) floor (nemo_icon_canvas_item_get_max_text_width (item));
+		if (details->text_cache != NULL && details->editable_text != NULL) {
+			nemo_icon_text_cache_insert (details->text_cache,
+										 details->editable_text,
+										 max_width_cached,
+										 &m);
+		}
+	}
 
 	if (editable_layout) {
 		g_object_unref (editable_layout);
