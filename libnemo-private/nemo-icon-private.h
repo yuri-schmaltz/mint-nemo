@@ -30,6 +30,7 @@
 #include <libnemo-private/nemo-icon-container.h>
 #include <libnemo-private/nemo-icon-dnd.h>
 #include <libnemo-private/nemo-icon.h>
+#include <libnemo-private/nemo-lazy-thumbnail-loader.h>
 
 /* Private NemoIconContainer members. */
 
@@ -305,6 +306,8 @@ struct NemoIconContainerDetails {
 
     GQueue *lazy_icon_load_queue;
     guint lazy_icon_load_id;
+
+	NemoLazyThumbnailLoader *thumbnail_loader;
 
     GList *current_selection;
     gint current_selection_count;

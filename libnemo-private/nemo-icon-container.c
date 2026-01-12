@@ -38,6 +38,7 @@
 #include "nemo-selection-canvas-item.h"
 #include "nemo-desktop-utils.h"
 #include "nemo-thumbnails.h"
+#include "nemo-lazy-thumbnail-loader.h"
 #include <atk/atkaction.h>
 #include <eel/eel-accessibility.h>
 #include <eel/eel-vfs-extensions.h>
@@ -2771,6 +2772,11 @@ finalize (GObject *object)
 
 	g_free (details->font);
 
+	if (details->thumbnail_loader != NULL) {
+		g_object_unref (details->thumbnail_loader);
+		details->thumbnail_loader = NULL;
+	}
+
 	if (details->a11y_item_action_queue != NULL) {
 		while (!g_queue_is_empty (details->a11y_item_action_queue)) {
 			g_free (g_queue_pop_head (details->a11y_item_action_queue));
@@ -4921,6 +4927,8 @@ nemo_icon_container_init (NemoIconContainer *container)
 
     details->view_constants = g_new0 (NemoViewLayoutConstants, 1);
 
+	details->thumbnail_loader = nemo_lazy_thumbnail_loader_new (4, 200);
+
 	container->details = details;
 
 	g_signal_connect (container, "focus-in-event",
@@ -5590,6 +5598,26 @@ nemo_icon_container_unfreeze_updates (NemoIconContainer *container)
 	klass->unfreeze_updates (container);
 }
 
+typedef struct {
+	NemoIconCanvasItem *item;
+} LazyThumbnailContext;
+
+static void
+on_lazy_thumbnail_ready (GdkPixbuf *pixbuf, gpointer user_data)
+{
+	LazyThumbnailContext *ctx = user_data;
+
+	if (pixbuf != NULL && ctx->item != NULL) {
+		nemo_icon_canvas_item_set_image (ctx->item, pixbuf);
+	}
+
+	if (ctx->item != NULL) {
+		g_object_unref (ctx->item);
+	}
+
+	g_free (ctx);
+}
+
 static gboolean
 update_visible_icons_cb (NemoIconContainer *container)
 {
@@ -5601,8 +5629,11 @@ update_visible_icons_cb (NemoIconContainer *container)
 	NemoIcon *icon;
 	gboolean visible;
 	GtkAllocation allocation;
+	NemoIconContainerDetails *details;
+	GList *visible_uris = NULL;
 
     container->details->update_visible_icons_id = 0;
+	details = container->details;
 
 	hadj = gtk_scrollable_get_hadjustment (GTK_SCROLLABLE (container));
 	vadj = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (container));
@@ -5649,29 +5680,51 @@ update_visible_icons_cb (NemoIconContainer *container)
 
 			if (visible) {
 				nemo_icon_canvas_item_set_is_visible (icon->item, TRUE);
-                NemoFile *file = NEMO_FILE (icon->data);
+				NemoFile *file = NEMO_FILE (icon->data);
 
-                if (!icon->ok_to_show_thumb) {
+				if (!icon->ok_to_show_thumb) {
 
-                    icon->ok_to_show_thumb = TRUE;
+					icon->ok_to_show_thumb = TRUE;
 
-                    if (nemo_file_get_load_deferred_attrs (file) == NEMO_FILE_LOAD_DEFERRED_ATTRS_NO) {
-                        nemo_file_set_load_deferred_attrs (file, NEMO_FILE_LOAD_DEFERRED_ATTRS_YES);
-                    }
+					if (nemo_file_get_load_deferred_attrs (file) == NEMO_FILE_LOAD_DEFERRED_ATTRS_NO) {
+						nemo_file_set_load_deferred_attrs (file, NEMO_FILE_LOAD_DEFERRED_ATTRS_YES);
+					}
 
-                    nemo_file_invalidate_attributes (file, NEMO_FILE_DEFERRED_ATTRIBUTES);
-                } else {
-                    gchar *uri = nemo_file_get_uri (file);
-                    nemo_thumbnail_prioritize (uri);
-                    g_free (uri);
-                }
+					nemo_file_invalidate_attributes (file, NEMO_FILE_DEFERRED_ATTRIBUTES);
+				}
 
-                nemo_icon_container_update_icon (container, icon);
+				gchar *uri = nemo_file_get_uri (file);
+
+				if (details->thumbnail_loader != NULL && uri != NULL) {
+					LazyThumbnailContext *ctx = g_new0 (LazyThumbnailContext, 1);
+					ctx->item = g_object_ref (icon->item);
+
+					nemo_lazy_thumbnail_loader_request (details->thumbnail_loader,
+														uri,
+														128,
+														0,
+														on_lazy_thumbnail_ready,
+														ctx);
+
+					visible_uris = g_list_prepend (visible_uris, g_strdup (uri));
+				} else if (uri != NULL) {
+					nemo_thumbnail_prioritize (uri);
+				}
+
+				g_free (uri);
+				nemo_icon_container_update_icon (container, icon);
 			} else {
 				nemo_icon_canvas_item_set_is_visible (icon->item, FALSE);
 			}
 		}
 	}
+
+	if (details->thumbnail_loader != NULL) {
+		nemo_lazy_thumbnail_loader_cancel_invisible (details->thumbnail_loader,
+									visible_uris);
+	}
+
+	g_list_free_full (visible_uris, g_free);
 
     return G_SOURCE_REMOVE;
 }

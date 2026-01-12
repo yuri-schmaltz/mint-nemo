@@ -22,6 +22,7 @@
 
 #include "../libnemo-private/nemo-lazy-thumbnail-loader.h"
 #include <glib.h>
+#include <glib/gstdio.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 typedef struct {
@@ -131,7 +132,6 @@ static void
 test_cancel_request (void)
 {
     NemoLazyThumbnailLoader *loader = nemo_lazy_thumbnail_loader_new (1, 50);
-    TestData data = { NULL, NULL, FALSE };
     
     /* Queue many requests */
     for (int i = 0; i < 10; i++) {
