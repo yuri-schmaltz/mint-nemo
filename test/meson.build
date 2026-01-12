@@ -26,3 +26,12 @@ test('Copy test',
   ),
   args: []
 )
+
+test('Icon Text Cache test',
+  executable('test-icon-text-cache',
+    [ 'test-icon-text-cache.c' ],
+    include_directories: [ rootInclude, ],
+    dependencies: [ gtk, nemo_private ],
+  ),
+  args: []
+)
