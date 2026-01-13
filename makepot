@@ -1,4 +1,8 @@
 #!/bin/bash
+# ATENÇÃO: SCRIPT MARCADO COMO "SUSPEITO — USO LEGADO/TRADUÇÃO"
+# Não remover sem confirmação dos owners/responsáveis por internacionalização.
+# Verificar uso real antes de qualquer exclusão. (Auditoria 2026)
+
 data/nemo-actions/extract_action_strings data/nemo-actions
 itstool -o nemo.pot data/nemo.xml.in
 xgettext -c --join-existing --from-code=UTF-8 --keyword=_ --keyword=N_ --output=nemo.pot \

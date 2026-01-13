@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+# ATENÇÃO: SCRIPT MARCADO COMO "SUSPEITO — USO LEGADO/TRADUÇÃO"
+# Não remover sem confirmação dos owners/responsáveis por internacionalização.
+# Verificar uso real antes de qualquer exclusão. (Auditoria 2026)
+
 import os
 
 os.chdir("data/nemo-actions/")
