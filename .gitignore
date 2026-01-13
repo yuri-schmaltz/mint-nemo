@@ -46,3 +46,20 @@ debian/files
 *.debhelper
 
 obj-x86_64-linux-gnu
+
+# Artefatos de build e temporários
+build/
+*.o
+*.so
+*.pyc
+__pycache__/
+# Arquivos de log
+*.log
+# Arquivos de backup
+*.bak
+*.old
+# Arquivos de cache
+.cache/
+# Outros artefatos comuns
+.DS_Store
+Thumbs.db
