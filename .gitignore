@@ -63,3 +63,6 @@ __pycache__/
 # Outros artefatos comuns
 .DS_Store
 Thumbs.db
+
+# Release binaries (should be in GitHub Releases, not tracked)
+releases/*.deb
