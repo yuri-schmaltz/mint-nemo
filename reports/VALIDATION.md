@@ -21,7 +21,6 @@
 ## Depois (Onda 1)
 - Sem alteração funcional de código nesta onda.
 - Resultado esperado: paridade funcional 100% preservada.
-- Revalidação rápida:
 
 | Verificação | Status | Evidência |
 |---|---|---|
@@ -29,4 +28,23 @@
 | `meson compile -C build-orch-baseline` | PASS | `reports/EVIDENCE/20260215_meson_compile_baseline.log` |
 | `meson test -C build-orch-baseline` | FAIL (mesma limitação de display) | `reports/EVIDENCE/20260215_meson_test_baseline.log` |
 
-Conclusão Onda 1: PASS para objetivo de baseline/guardrails; FAIL conhecido restrito a display headless.
+## Depois (Onda 2)
+- Onda documental (achados + priorização) sem alteração de binários.
+- Regressão funcional: nenhuma observada.
+
+| Verificação | Status | Evidência |
+|---|---|---|
+| Integridade de baseline mantida | PASS | `reports/EVIDENCE/20260215_baseline_results.txt` |
+| Backlog com score e rollback por item | PASS | `reports/BACKLOG.md` |
+
+## Depois (Onda 3)
+- Onda documental para módulos complexos (AEGIS/GTK4/Release).
+
+| Verificação | Status | Evidência |
+|---|---|---|
+| Checklist de release atualizado | PASS | `reports/RELEASE_CHECKLIST.md` |
+| Critérios AEGIS explicitados | PASS (documentado) | `reports/RELEASE_CHECKLIST.md` |
+| Validação visual headless | NÃO VERIFICADO | `reports/EVIDENCE/20260215_nemo_quit_xvfb.log` |
+| Prontidão GTK4 imediata | FAIL (alto acoplamento GTK3) | `reports/BACKLOG.md` (`BKL-006`) |
+
+Conclusão parcial: baseline técnico estável; bloqueio residual permanece ambiental (display virtual ausente).
