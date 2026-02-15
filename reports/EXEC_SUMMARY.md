@@ -1,10 +1,14 @@
 # EXEC_SUMMARY
 
-- Fluxo `$orquestrador-unificado` executado de ponta a ponta sem intervenção, com baseline antes/depois.
-- Causa raiz inicial de bloqueio de build confirmada e corrigida: ausência de `meson_options.txt` (`meson.build:47`, `reports/EVIDENCE/14_meson_setup_baseline.log`).
-- Build tree parcial foi tratado de forma conservadora e reversível (subdirs opcionais + módulos ausentes fallback), sem remover funcionalidades já existentes.
-- `meson setup` passou após as ondas (`reports/EVIDENCE/60_meson_setup_wave4.log`).
-- `meson compile` passou e gerou binários principais (`reports/EVIDENCE/61_meson_compile_wave4.log`).
-- `meson test` permanece FAIL por ambiente sem display (`Gtk-WARNING cannot open display`) (`reports/EVIDENCE/62_meson_test_wave4.log`).
-- Validação visual AEGIS permanece NÃO VERIFICADA por ausência de Xvfb no ambiente (`reports/EVIDENCE/20_xvfb_tools.log`).
-- Backlog priorizado, validação PASS/FAIL e plano de rollback por onda foram finalizados em `reports/`.
+- Fluxo `$orquestrador-unificado` executado ponta a ponta em 4 ondas, sem intervenção humana.
+- Fase 0 concluída: stack C/Meson/GTK3, CI, UI resources e pontos de teste mapeados (`reports/BASELINE.md`, `reports/SYSTEM_MAP.md`).
+- Fase 1 concluída: baseline automático executado antes de qualquer mudança de relatório (`meson setup`/`compile` PASS; `meson test` FAIL por display ausente).
+- Smoke funcional mínimo executado com 3 fluxos CLI principais (`nemo`, `nemo-connect-server`, `nemo-open-with`) com evidência de tempo/RSS.
+- Fase 2 concluída por áreas: segurança, desktop/rede local, observabilidade, UI/AEGIS e prontidão GTK4.
+- Achados priorizados em `reports/BACKLOG.md` com score `(Impacto x Probabilidade) / Esforço`, risco, mitigação e rollback.
+- Onda 1 (`a77819c`): baseline e evidências versionáveis atualizadas.
+- Onda 2 (`9630d56`): backlog técnico renovado e priorizado para esta execução.
+- Onda 3 (`5ed25ac`): checklist de release e validação por módulo atualizados.
+- Onda 4 (`HEAD`): fechamento executivo, trilha de mudanças e rollback global consolidados.
+- Paridade funcional preservada: nenhuma alteração de código de produto foi aplicada nesta execução.
+- Bloqueio residual: validação visual/headless continua NÃO VERIFICADA por ausência de `xvfb-run` no ambiente atual.

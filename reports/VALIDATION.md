@@ -24,17 +24,13 @@
 
 | Verificação | Status | Evidência |
 |---|---|---|
-| `meson setup -C build-orch-baseline` | PASS | `reports/EVIDENCE/20260215_meson_setup_baseline.log` |
-| `meson compile -C build-orch-baseline` | PASS | `reports/EVIDENCE/20260215_meson_compile_baseline.log` |
-| `meson test -C build-orch-baseline` | FAIL (mesma limitação de display) | `reports/EVIDENCE/20260215_meson_test_baseline.log` |
+| Integridade do baseline técnico | PASS | `reports/EVIDENCE/20260215_baseline_results.txt` |
 
 ## Depois (Onda 2)
 - Onda documental (achados + priorização) sem alteração de binários.
-- Regressão funcional: nenhuma observada.
 
 | Verificação | Status | Evidência |
 |---|---|---|
-| Integridade de baseline mantida | PASS | `reports/EVIDENCE/20260215_baseline_results.txt` |
 | Backlog com score e rollback por item | PASS | `reports/BACKLOG.md` |
 
 ## Depois (Onda 3)
@@ -43,8 +39,16 @@
 | Verificação | Status | Evidência |
 |---|---|---|
 | Checklist de release atualizado | PASS | `reports/RELEASE_CHECKLIST.md` |
-| Critérios AEGIS explicitados | PASS (documentado) | `reports/RELEASE_CHECKLIST.md` |
 | Validação visual headless | NÃO VERIFICADO | `reports/EVIDENCE/20260215_nemo_quit_xvfb.log` |
 | Prontidão GTK4 imediata | FAIL (alto acoplamento GTK3) | `reports/BACKLOG.md` (`BKL-006`) |
 
-Conclusão parcial: baseline técnico estável; bloqueio residual permanece ambiental (display virtual ausente).
+## Depois (Onda 4)
+- Fechamento documental final (sumário, trilha de mudanças e rollback global).
+
+| Verificação | Status | Evidência |
+|---|---|---|
+| `reports/EXEC_SUMMARY.md` final | PASS | `reports/EXEC_SUMMARY.md` |
+| `reports/CHANGES.md` com commits incrementais | PASS | `reports/CHANGES.md` |
+| Plano de rollback consolidado | PASS | `reports/RELEASE_CHECKLIST.md` |
+
+Conclusão final: execução concluída; bloqueio residual continua ambiental (display virtual ausente).

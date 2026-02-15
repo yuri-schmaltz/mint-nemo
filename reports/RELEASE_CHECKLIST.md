@@ -28,9 +28,11 @@ Observação: itens acima seguem NÃO VERIFICADO nesta execução por ausência 
 - [x] `reports/BASELINE.md` atualizado.
 - [x] `reports/SYSTEM_MAP.md` atualizado.
 - [x] `reports/BACKLOG.md` atualizado e priorizado.
-- [ ] `reports/CHANGES.md` finalizado com commits de todas as ondas.
-- [ ] `reports/EXEC_SUMMARY.md` finalizado.
+- [x] `reports/CHANGES.md` finalizado com commits e rollback.
+- [x] `reports/EXEC_SUMMARY.md` finalizado.
 
 ## Rollback global
-1. `git revert 9630d56`
-2. `git revert a77819c`
+1. `git revert HEAD`
+2. `git revert 5ed25ac`
+3. `git revert 9630d56`
+4. `git revert a77819c`
