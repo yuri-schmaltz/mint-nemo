@@ -1,0 +1,46 @@
+  1320	
+  1321	    nemo_view_new_folder (view);
+  1322	}
+  1323	
+  1324	static void
+  1325	open_in_terminal_other (const gchar *path)
+  1326	{
+  1327	    gchar *gsetting_terminal;
+  1328	    gchar **token;
+  1329	    gchar **argv;
+  1330	    gint i;
+  1331	
+  1332	    gsetting_terminal = g_settings_get_string (gnome_terminal_preferences,
+  1333	                                               GNOME_DESKTOP_TERMINAL_EXEC);
+  1334	
+  1335	    token = g_strsplit (gsetting_terminal, " ", 0);
+  1336	    argv = g_new (gchar *, g_strv_length (token) + 1);
+  1337	    for (i = 0; token[i] != NULL; i++) {
+  1338	        argv[i] = token[i];
+  1339	    }
+  1340	    argv[i] = NULL;
+  1341	
+  1342	    g_spawn_async (path, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+  1343	
+  1344	    g_free (gsetting_terminal);
+  1345	    g_strfreev (token);
+  1346	    g_free (argv);
+  1347	}
+  1348	
+  1349	
+  1350	static void
+  1351	action_open_terminal_callback(GtkAction *action, gpointer callback_data)
+  1352	{
+  1353	    NemoWindow *window;
+  1354	    NemoView *view;
+  1355	
+  1356	    window = NEMO_WINDOW(callback_data);
+  1357	
+  1358	    view = get_current_view (window);
+  1359	
+  1360	    gchar *path;
+  1361	    gchar *uri = nemo_view_get_backing_uri (view);
+  1362	    GFile *gfile = g_file_new_for_uri (uri);
+  1363	    path = g_file_get_path (gfile);
+  1364	    open_in_terminal_other (path);
+  1365	    g_free (uri);

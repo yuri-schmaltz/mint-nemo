@@ -1,0 +1,49 @@
+     1	option(
+     2	  'deprecated_warnings',
+     3	  type: 'boolean',
+     4	  value: false,
+     5	  description: 'Enable deprecated API warnings during compilation'
+     6	)
+     7	
+     8	option(
+     9	  'tracker',
+    10	  type: 'combo',
+    11	  choices: ['false', 'auto', 'true'],
+    12	  value: 'false',
+    13	  description: 'Build tracker search support (false, auto, true)'
+    14	)
+    15	
+    16	option(
+    17	  'gtk_doc',
+    18	  type: 'boolean',
+    19	  value: false,
+    20	  description: 'Build gtk-doc documentation'
+    21	)
+    22	
+    23	option(
+    24	  'exif',
+    25	  type: 'boolean',
+    26	  value: true,
+    27	  description: 'Enable EXIF metadata support'
+    28	)
+    29	
+    30	option(
+    31	  'xmp',
+    32	  type: 'boolean',
+    33	  value: true,
+    34	  description: 'Enable XMP metadata support (exempi)'
+    35	)
+    36	
+    37	option(
+    38	  'selinux',
+    39	  type: 'boolean',
+    40	  value: true,
+    41	  description: 'Enable SELinux support'
+    42	)
+    43	
+    44	option(
+    45	  'empty_view',
+    46	  type: 'boolean',
+    47	  value: false,
+    48	  description: 'Enable the legacy empty view implementation'
+    49	)

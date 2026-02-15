@@ -1,0 +1,86 @@
+  7090						copied_files_atom,
+  7091						paste_into_clipboard_received_callback,
+  7092						data);
+  7093	}
+  7094	
+  7095	static void
+  7096	cb_open_as_root_watch (GPid pid, gint status, gpointer user_data)
+  7097	{
+  7098	    g_spawn_close_pid(pid);
+  7099	}
+  7100	
+  7101	static void
+  7102	open_as_admin (NemoView *view, const gchar *path) {
+  7103	    g_autoptr(GUri) uri_obj = g_uri_build (0, "admin", NULL, NULL, -1, path, NULL, NULL);
+  7104	    g_autofree gchar *uri = g_uri_to_string (uri_obj);
+  7105	    g_autoptr(GFile) location = g_file_new_for_uri (uri);
+  7106	
+  7107	    nemo_window_slot_open_location (view->details->slot, location, 0);
+  7108	}
+  7109	
+  7110	static void
+  7111	open_as_root (NemoView *view, const gchar *path)
+  7112	{
+  7113	    if (eel_check_is_wayland ()) {
+  7114	        open_as_admin (view, path);
+  7115	        return;
+  7116	    }
+  7117	
+  7118	    gchar *argv[4];
+  7119	    argv[0] = (gchar *)"pkexec";
+  7120	    argv[1] = (gchar *)"nemo";
+  7121	    argv[2] = g_strdup (path);
+  7122	    argv[3] = NULL;
+  7123	    GPid pid;
+  7124	    g_spawn_async(NULL, argv, NULL, G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,
+  7125	                  NULL, NULL, &pid, NULL);
+  7126	    g_child_watch_add(pid, (GChildWatchFunc)cb_open_as_root_watch, NULL);
+  7127	    g_free (argv[2]);
+  7128	}
+  7129	
+  7130	static void
+  7131	open_in_terminal (const gchar *path)
+  7132	{
+  7133	    gchar *gsetting_terminal;
+  7134	    gchar **token;
+  7135	    gchar **argv;
+  7136	    gint i;
+  7137	
+  7138	    gsetting_terminal = g_settings_get_string (gnome_terminal_preferences,
+  7139	                                               GNOME_DESKTOP_TERMINAL_EXEC);
+  7140	
+  7141	    token = g_strsplit (gsetting_terminal, " ", 0);
+  7142	    argv = g_new (gchar *, g_strv_length (token) + 1);
+  7143	    for (i = 0; token[i] != NULL; i++) {
+  7144	        argv[i] = token[i];
+  7145	    }
+  7146	    argv[i] = NULL;
+  7147	
+  7148	    g_spawn_async (path, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+  7149	
+  7150	    g_free (gsetting_terminal);
+  7151	    g_strfreev (token);
+  7152	    g_free (argv);
+  7153	}
+  7154	
+  7155	static void
+  7156	action_paste_files_into_callback (GtkAction *action,
+  7157					  gpointer callback_data)
+  7158	{
+  7159		NemoView *view;
+  7160		GList *selection;
+  7161	
+  7162		view = NEMO_VIEW (callback_data);
+  7163		selection = nemo_view_get_selection (view);
+  7164		if (selection != NULL) {
+  7165			paste_into (view, NEMO_FILE (selection->data));
+  7166			nemo_file_list_free (selection);
+  7167		}
+  7168	
+  7169	}
+  7170	
+  7171	static void
+  7172	action_open_as_root_callback (GtkAction *action,
+  7173					  gpointer callback_data)
+  7174	{
+  7175		NemoView *view;

@@ -1,0 +1,56 @@
+   130	
+   131	static gboolean
+   132	on_config_clicked (GtkLinkButton *button,
+   133	                   gpointer       user_data)
+   134	{
+   135	    ExtensionProxy *proxy = (ExtensionProxy *) user_data;
+   136	
+   137	    g_spawn_command_line_async (proxy->config_exec, NULL);
+   138	
+   139	    return GDK_EVENT_STOP;
+   140	}
+   141	
+   142	#define LINE_PREFIX "NEMO_EXTENSION:::"
+   143	#define LINE_PREFIX_LEN 17
+   144	
+   145	static void
+   146	detect_extensions (NemoExtensionConfigWidget *widget)
+   147	{
+   148	    gchar *out = NULL;
+   149	
+   150	    if (g_spawn_command_line_sync (LIBEXECDIR "/nemo-extensions-list",
+   151	                                   &out,
+   152	                                   NULL,
+   153	                                   NULL,
+   154	                                   NULL)) {
+   155	        if (out) {
+   156	            gchar **lines = g_strsplit (out, "\n", -1);
+   157	
+   158	            g_free (out);
+   159	
+   160	            guint i;
+   161	            for (i = 0; i < g_strv_length (lines); i++) {
+   162	                if (g_str_has_prefix (lines[i], LINE_PREFIX)) {
+   163	                    ExtensionProxy *p = g_new0 (ExtensionProxy, 1);
+   164	
+   165	                    gchar **split = g_strsplit (lines[i] + LINE_PREFIX_LEN, ":::", -1);
+   166	                    gint len = g_strv_length (split);
+   167	
+   168	                    if (len > 0) {
+   169	                        p->name = g_strdup (split[0]);
+   170	                    }
+   171	
+   172	                    if (len == 3) {
+   173	                        p->display_name = g_strdup (split[1]);
+   174	                        p->desc = g_strdup (split[2]);
+   175	                    } else if (len == 4) {
+   176	                        p->display_name = g_strdup (split[1]);
+   177	                        p->desc = g_strdup (split[2]);
+   178	                        p->config_exec = g_strdup (split[3]);
+   179	                    } else {
+   180	                        p->display_name = NULL;
+   181	                        p->desc = NULL;
+   182	                        p->config_exec = NULL;
+   183	                    }
+   184	
+   185	                    p->widget = widget;

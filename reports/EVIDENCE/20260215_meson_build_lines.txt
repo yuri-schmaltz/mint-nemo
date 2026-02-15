@@ -1,0 +1,220 @@
+     1	# Meson build file
+     2	
+     3	# https://github.com/linuxmint/nemo
+     4	project('nemo', 'c', version : '6.6.2', meson_version : '>=0.56.0')
+     5	
+     6	# 1. If the library code has changed at all since last release, then increment revision.
+     7	# 2. If any interfaces have been added, then increment current and set revision to 0.
+     8	# Interface break is not allowed.
+     9	nemo_extension_current  = 5
+    10	nemo_extension_revision = 0
+    11	
+    12	# We need to decrement current by one in the calculation of the age because
+    13	# the library was started with version "1:0:0" instead of "0:0:0"
+    14	NEMO_EXTENSION_VERSION_INFO = '@0@:@1@:@2@'.format(
+    15	  nemo_extension_current, nemo_extension_revision, nemo_extension_current - 1
+    16	)
+    17	
+    18	################################################################################
+    19	conf = configuration_data()
+    20	
+    21	gnome = import('gnome')
+    22	pkgconfig = import('pkgconfig')
+    23	fs = import('fs')
+    24	
+    25	cc = meson.get_compiler('c')
+    26	prefix = get_option('prefix')
+    27	buildtype = get_option('buildtype')
+    28	
+    29	# Surround the version in quotes to make it a C string
+    30	conf.set_quoted('VERSION', meson.project_version())
+    31	
+    32	check_headers = [
+    33	  'malloc.h',
+    34	  'sys/mount.h',
+    35	  'sys/param.h',
+    36	  'sys/vfs.h',
+    37	  'X11/XF86keysym.h',
+    38	]
+    39	
+    40	foreach h : check_headers
+    41	  conf.set10('HAVE_' + h.underscorify().to_upper(), cc.has_header(h))
+    42	endforeach
+    43	
+    44	conf.set10('HAVE_MALLOPT', cc.has_function('mallopt', prefix: '#include <malloc.h>'))
+    45	
+    46	
+    47	if not get_option('deprecated_warnings')
+    48	  add_global_arguments([
+    49	      '-Wno-deprecated-declarations',
+    50	      '-Wno-deprecated',
+    51	      '-Wno-declaration-after-statement',
+    52	      '-DGLIB_DISABLE_DEPRECATION_WARNINGS',
+    53	    ],
+    54	    language: 'c',
+    55	  )
+    56	endif
+    57	
+    58	if buildtype in ['debug', 'debugoptimized']
+    59	    conf.set('ENABLE_DEBUG', true)
+    60	endif
+    61	
+    62	if buildtype == 'debug'
+    63	    add_global_arguments('-fno-omit-frame-pointer', language: 'c')
+    64	endif
+    65	
+    66	################################################################################
+    67	# Find dependencies
+    68	
+    69	glib_version = '>=2.45.7'
+    70	
+    71	math    = cc.find_library('m', required: true)
+    72	
+    73	gtk     = dependency('gtk+-3.0',                    version: '>=3.10.0')
+    74	gio     = dependency('gio-2.0',                     version: glib_version)
+    75	gio_unix= dependency('gio-unix-2.0',                version: glib_version)
+    76	glib    = dependency('glib-2.0',                    version: glib_version)
+    77	gmodule = dependency('gmodule-no-export-2.0',       version: glib_version)
+    78	gobject = dependency('gobject-2.0',                 version: '>=2.0')
+    79	go_intr = dependency('gobject-introspection-1.0',   version: '>=1.0')
+    80	json    = dependency('json-glib-1.0',               version: '>=1.6')
+    81	
+    82	cinnamon= dependency('cinnamon-desktop',            version: '>=4.8.0')
+    83	gail    = dependency('gail-3.0')
+    84	x11     = dependency('x11')
+    85	xapp    = dependency('xapp',                        version: '>=2.0.0')
+    86	
+    87	# Facultative dependencies
+    88	
+    89	trackerChoice = get_option('tracker')
+    90	tracker_enabled = false
+    91	if trackerChoice != 'false'
+    92	  trackerRequired = (trackerChoice == 'true')
+    93	  # Check all the possible versions
+    94	    tracker_sparql = dependency('tracker-sparql-3.0',  required: false)
+    95	  if not tracker_sparql.found()
+    96	    tracker_sparql = dependency('tracker-sparql-2.0',  required: false)
+    97	  endif
+    98	  if not tracker_sparql.found()
+    99	    tracker_sparql = dependency('tracker-sparql-1.0',  required: false)
+   100	  endif
+   101	  if not tracker_sparql.found()
+   102	    tracker_sparql = dependency('tracker-sparql-0.18', required: false)
+   103	  endif
+   104	  if not tracker_sparql.found()
+   105	    tracker_sparql = dependency('tracker-sparql-0.16', required: trackerRequired)
+   106	  endif
+   107	
+   108	  tracker_enabled = trackerRequired or tracker_sparql.found()
+   109	endif
+   110	conf.set('ENABLE_TRACKER', tracker_enabled)
+   111	
+   112	
+   113	gtkdoc_enabled = get_option('gtk_doc')
+   114	if gtkdoc_enabled
+   115	  find_program('gtkdoc-scan', required: true)
+   116	endif
+   117	
+   118	
+   119	libexif_enabled = get_option('exif')
+   120	if libexif_enabled
+   121	  libexif = dependency('libexif',                   version: '>=0.6.20')
+   122	endif
+   123	conf.set('HAVE_EXIF', libexif_enabled)
+   124	
+   125	exempi_enabled = get_option('xmp')
+   126	if exempi_enabled
+   127	  exempi = dependency('exempi-2.0',                 version: '>=2.2.0')
+   128	endif
+   129	conf.set('HAVE_EXEMPI', exempi_enabled)
+   130	
+   131	libselinux_enabled = get_option('selinux')
+   132	if libselinux_enabled
+   133	  libselinux = dependency('libselinux',             version: '>=2.0')
+   134	endif
+   135	conf.set('HAVE_SELINUX', libselinux_enabled)
+   136	
+   137	# make sure pango development files are installed
+   138	pango = dependency('pango', version: '>=1.40.0')
+   139	# check for newer pango for necessary workarounds
+   140	new_pango = dependency('pango', version: '>=1.44.0', required: false)
+   141	if new_pango.found()
+   142	  conf.set('HAVE_PANGO_144', true)
+   143	else
+   144	  message('................using pango @0@ instead'.format(new_pango.version()))
+   145	endif
+   146	
+   147	enableEmptyView = get_option('empty_view')
+   148	conf.set10('ENABLE_EMPTY_VIEW', enableEmptyView)
+   149	
+   150	conf.set_quoted('GETTEXT_PACKAGE', 'nemo')
+   151	conf.set_quoted('LOCALE_DIR',  join_paths(get_option('prefix'), get_option('localedir')))
+   152	conf.set_quoted('LOCALEDIR',   join_paths(get_option('prefix'), get_option('localedir')))
+   153	conf.set('ENABLE_NLS', cc.has_header('libintl.h'))
+   154	conf.set('HAVE_GETTEXT', true)
+   155	conf.set('HAVE_LOCALE_H', cc.has_header('locale.h'))
+   156	
+   157	configure_file(
+   158	  input : 'config.h.meson.in',
+   159	  output: 'config.h',
+   160	  configuration: conf
+   161	)
+   162	
+   163	################################################################################
+   164	
+   165	rootInclude = include_directories('.')
+   166	nemoDataPath      = join_paths(get_option('prefix'), get_option('datadir'), 'nemo')
+   167	libExecPath       = join_paths(get_option('prefix'), get_option('libexecdir'))
+   168	# Keep this constant, in case some extensions are behind in being updated...
+   169	nemoExtensionPath = join_paths(get_option('prefix'), get_option('libdir'), 'nemo', 'extensions-3.0')
+   170	
+   171	nemo_definitions =  [
+   172	  '-DNEMO_DATADIR="@0@"'.format(nemoDataPath),
+   173	  '-DNEMO_EXTENSIONDIR="@0@"'.format(nemoExtensionPath),
+   174	  '-DLIBEXECDIR="@0@"'.format(libExecPath),
+   175	  '-DG_LOG_DOMAIN="Nemo"'
+   176	]
+   177	
+   178	po_subdir = join_paths(meson.project_source_root(), 'po')
+   179	
+   180	subdir('install-scripts')
+   181	subdir('cut-n-paste-code/libegg')
+   182	subdir('data')
+   183	subdir('eel')
+   184	subdir('files')
+   185	subdir('gresources')
+   186	subdir('libnemo-extension')
+   187	subdir('libnemo-private')
+   188	# subdir('po')
+   189	subdir('src')
+   190	if fs.is_dir('search-helpers')
+   191	  subdir('search-helpers')
+   192	else
+   193	  message('Skipping optional subdir: search-helpers (not present in source tree)')
+   194	endif
+   195	if fs.is_dir('test')
+   196	  subdir('test')
+   197	else
+   198	  message('Skipping optional subdir: test (not present in source tree)')
+   199	endif
+   200	subdir('docs')
+   201	subdir('action-layout-editor')
+   202	
+   203	message('\n'.join(['',
+   204	'        @0@-@1@'.format(meson.project_name(), meson.project_version()),
+   205	'',
+   206	'    prefix:                 @0@'.format(prefix),
+   207	'    source code location:   @0@'.format(meson.project_source_root()),
+   208	'    compiler:               @0@'.format(cc.get_id()),
+   209	'    libexif support:        @0@'.format(libexif_enabled),
+   210	'    exempi  support:        @0@'.format(exempi_enabled),
+   211	'    Tracker support:        @0@'.format(tracker_enabled),
+   212	'    Wayland support:        @0@'.format(cc.has_header('gdk/gdkwayland.h', dependencies: gtk)),
+   213	'',
+   214	'    nemo-extension documentation: @0@'.format(gtkdoc_enabled),
+   215	'    nemo-extension introspection: @0@'.format(true),
+   216	'',
+   217	'    debugging support:      @0@'.format(buildtype),
+   218	'    perf profiling support: @0@'.format(buildtype == 'debug'),
+   219	'',
+   220	]))

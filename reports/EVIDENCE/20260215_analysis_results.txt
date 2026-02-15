@@ -1,0 +1,299 @@
+[CI_SCAN]
+.github/ISSUE_TEMPLATE/bug_report.yaml:1:name: Bug Report
+.github/workflows/build.yml:1:name: Build
+.github/workflows/build.yml:19:  build:
+.github/workflows/build.yml:20:    uses: linuxmint/github-actions/.github/workflows/do-builds.yml@master
+
+[UI_FILES]
+./gresources/nemo-action-layout-editor.glade
+./gresources/nemo-bookmarks-window.glade
+./gresources/nemo-desktop-overlay.glade
+./gresources/nemo-desktop-preferences.glade
+./gresources/nemo-file-management-properties.glade
+./gresources/nemo-search-bar.glade
+./gresources/nemo-shortcuts.ui
+
+[ENTRYPOINTS]
+eel/check-program.c:43:	gtk_init (&argc, &argv);
+src/nemo-window.c:2181:nemo_window_new (GtkApplication *application,
+src/nemo-application.h:46:	GtkApplication parent;
+src/nemo-application.h:54:	GtkApplicationClass parent_class;
+src/nemo-autorun-software.c:260:	gtk_init (&argc, &argv);
+src/nemo-main-application.c:122:	NemoMainApplication *app = NEMO_MAIN_APPLICATION (application);
+src/nemo-main-application.c:142:	NemoMainApplication *app = NEMO_MAIN_APPLICATION (application);
+src/nemo-main-application.c:215:    if (NEMO_MAIN_APPLICATION (application)->priv->geometry == NULL && 
+src/nemo-main-application.c:531:	NemoMainApplication *self = NEMO_MAIN_APPLICATION (app);
+src/nemo-main-application.c:577:    application = NEMO_MAIN_APPLICATION (object);
+src/nemo-main-application.c:663:	NemoMainApplication *self = NEMO_MAIN_APPLICATION (application);
+src/nemo-main-application.c:906:	NemoMainApplication *self = NEMO_MAIN_APPLICATION (app);
+src/nemo-application.c:547:	/* chain up to the GTK+ implementation early, so gtk_init()
+src/nemo-application.c:613:nemo_application_window_removed (GtkApplication *app,
+src/nemo-application.c:633:    GtkApplicationClass *gtkapp_class;
+src/nemo-main-application.h:24:#ifndef __NEMO_MAIN_APPLICATION_H__
+src/nemo-main-application.h:25:#define __NEMO_MAIN_APPLICATION_H__
+src/nemo-main-application.h:37:#define NEMO_MAIN_APPLICATION(obj) \
+src/nemo-main-application.h:39:#define NEMO_MAIN_APPLICATION_CLASS(klass) \
+src/nemo-main-application.h:45:#define NEMO_MAIN_APPLICATION_GET_CLASS(obj) \
+src/nemo-main-application.h:64:#endif /* __NEMO_MAIN_APPLICATION_H__ */
+src/nemo-window.h:81:        GtkApplicationWindowClass parent_spot;
+src/nemo-window.h:99:        GtkApplicationWindow parent_object;
+src/nemo-window.h:105:NemoWindow *     nemo_window_new                  (GtkApplication    *application,
+
+[GTK3_API_SCAN - first 120 lines]
+eel/eel-gtk-extensions.h:58:gboolean              eel_gtk_get_treeview_pointer_location           (GtkTreeView *treeview,
+eel/eel-gtk-extensions.h:60:gboolean              eel_gtk_get_treeview_row_text_is_under_pointer  (GtkTreeView *tree_view);
+libnemo-private/nemo-widget-menu-item.c:477:  child = gtk_bin_get_child (bin);
+libnemo-private/nemo-widget-menu-item.c:573:  old_w = gtk_bin_get_child (GTK_BIN (widget_menu_item));
+libnemo-private/nemo-widget-menu-item.c:588:    gtk_container_add (GTK_CONTAINER (widget_menu_item), widget);
+libnemo-private/nemo-tree-view-drag-dest.h:96:NemoTreeViewDragDest *nemo_tree_view_drag_dest_new      (GtkTreeView *tree_view, gboolean strict_drop);
+eel/eel-gtk-extensions.c:366:	gtk_container_add (GTK_CONTAINER (expander), label);
+eel/eel-gtk-extensions.c:367:	gtk_box_pack_start (GTK_BOX (content_area), expander, FALSE, FALSE, 0);
+eel/eel-gtk-extensions.c:390:eel_gtk_get_treeview_pointer_location (GtkTreeView *treeview,
+eel/eel-gtk-extensions.c:417:eel_gtk_get_treeview_row_text_is_under_pointer (GtkTreeView *tree_view)
+eel/eel-gtk-extensions.c:424:        GtkTreeViewColumn *column;
+src/nemo-notebook.c:343:	gtk_box_pack_start (GTK_BOX (hbox), spinner, FALSE, FALSE, 0);
+src/nemo-notebook.c:347:	gtk_box_pack_start (GTK_BOX (hbox), icon, FALSE, FALSE, 0);
+src/nemo-notebook.c:357:	gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
+src/nemo-notebook.c:374:	gtk_container_add (GTK_CONTAINER (close_button), image);
+src/nemo-notebook.c:377:	gtk_box_pack_start (GTK_BOX (hbox), close_button, FALSE, FALSE, 0);
+src/nemo-pathbar.c:185:    gtk_container_add (GTK_CONTAINER (button), image);
+src/nemo-pathbar.c:186:    gtk_container_add (GTK_CONTAINER (path_bar), button);
+src/nemo-pathbar.c:187:    gtk_widget_show_all (button);
+src/nemo-pathbar.c:800:        gtk_widget_show_all (path_bar->priv->up_slider_button);
+src/nemo-pathbar.c:817:        gtk_widget_show_all (path_bar->priv->down_slider_button);
+src/nemo-pathbar.c:1852:            gtk_box_pack_start (GTK_BOX (child), button_data->image, FALSE, FALSE, 0);
+src/nemo-pathbar.c:1853:            gtk_box_pack_start (GTK_BOX (child), button_data->label, FALSE, FALSE, 0);
+src/nemo-pathbar.c:1860:            gtk_box_pack_start (GTK_BOX (child), button_data->image, FALSE, FALSE, 0);
+src/nemo-pathbar.c:1861:            gtk_box_pack_start (GTK_BOX (child), button_data->label, FALSE, FALSE, 0);
+src/nemo-pathbar.c:1884:    gtk_container_add (GTK_CONTAINER (button_data->button), child);
+src/nemo-pathbar.c:1885:    gtk_widget_show_all (button_data->button);
+src/nemo-pathbar.c:2020:        gtk_container_add (GTK_CONTAINER (path_bar), button);
+libnemo-private/nemo-mime-application-chooser.c:501:    res = gtk_dialog_run (GTK_DIALOG (dialog));
+libnemo-private/nemo-mime-application-chooser.c:525:	gtk_box_pack_start (GTK_BOX (chooser), chooser->details->label,
+libnemo-private/nemo-mime-application-chooser.c:535:	gtk_box_pack_start (GTK_BOX (chooser), chooser->details->open_with_widget,
+libnemo-private/nemo-mime-application-chooser.c:550:    gtk_box_pack_start (GTK_BOX (chooser), custom_label, FALSE, FALSE, 0);
+libnemo-private/nemo-mime-application-chooser.c:554:    gtk_box_pack_start (GTK_BOX (chooser), custom_box, FALSE, FALSE, 6);
+libnemo-private/nemo-mime-application-chooser.c:557:    gtk_box_pack_start (GTK_BOX (custom_box), entry, TRUE, TRUE, 0);
+libnemo-private/nemo-mime-application-chooser.c:574:    gtk_box_pack_start (GTK_BOX (custom_box), button, FALSE, FALSE, 6);
+libnemo-private/nemo-mime-application-chooser.c:576:    gtk_widget_show_all (custom_box);
+libnemo-private/nemo-mime-application-chooser.c:581:	gtk_box_pack_start (GTK_BOX (chooser), box, FALSE, FALSE, 6);
+libnemo-private/nemo-mime-application-chooser.c:589:	gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
+libnemo-private/nemo-mime-application-chooser.c:597:	gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
+libnemo-private/nemo-mime-application-chooser.c:606:    gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
+eel/eel-stock-dialogs.c:359:        result = gtk_dialog_run (GTK_DIALOG (dialog));
+eel/eel-stock-dialogs.c:362:		result = gtk_dialog_run (GTK_DIALOG (dialog));
+src/nemo-thumbnail-problem-bar.c:128:    gtk_container_add (GTK_CONTAINER (content_area), label);
+src/nemo-toolbar.c:217:    gtk_container_add (GTK_CONTAINER (content_area), label);
+src/nemo-toolbar.c:220:    gtk_box_pack_start (GTK_BOX (self), self->priv->root_bar, TRUE, TRUE, 0);
+src/nemo-toolbar.c:275:    gtk_box_pack_start (GTK_BOX (self), self->priv->toolbar, TRUE, TRUE, 0);
+src/nemo-toolbar.c:285:    gtk_container_add (GTK_CONTAINER (box), self->priv->previous_button);
+src/nemo-toolbar.c:288:    gtk_container_add (GTK_CONTAINER (box), self->priv->next_button);
+src/nemo-toolbar.c:291:    gtk_container_add (GTK_CONTAINER (box), self->priv->up_button);
+src/nemo-toolbar.c:294:    gtk_container_add (GTK_CONTAINER (box), self->priv->refresh_button);
+src/nemo-toolbar.c:297:    gtk_container_add (GTK_CONTAINER (box), self->priv->home_button);
+src/nemo-toolbar.c:300:    gtk_container_add (GTK_CONTAINER (box), self->priv->computer_button);
+src/nemo-toolbar.c:302:    gtk_container_add (GTK_CONTAINER (tool_box), GTK_WIDGET (box));
+src/nemo-toolbar.c:303:    gtk_container_add (GTK_CONTAINER (self->priv->toolbar), GTK_WIDGET (tool_box));
+src/nemo-toolbar.c:305:    gtk_widget_show_all (GTK_WIDGET (tool_box));
+src/nemo-toolbar.c:315:    gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (self->priv->stack), TRUE, TRUE, 0);
+src/nemo-toolbar.c:323:    gtk_widget_show_all (hbox);
+src/nemo-toolbar.c:327:    gtk_container_add (GTK_CONTAINER (tool_box), hbox);
+src/nemo-toolbar.c:328:    gtk_container_add (GTK_CONTAINER (self->priv->toolbar), GTK_WIDGET (tool_box));
+src/nemo-toolbar.c:336:    gtk_container_add (GTK_CONTAINER (box), self->priv->toggle_location_button);
+src/nemo-toolbar.c:339:    gtk_container_add (GTK_CONTAINER (box), self->priv->open_terminal_button);
+src/nemo-toolbar.c:342:    gtk_container_add (GTK_CONTAINER (box), self->priv->new_folder_button);
+src/nemo-toolbar.c:345:    gtk_container_add (GTK_CONTAINER (box), self->priv->search_button);
+src/nemo-toolbar.c:348:    gtk_container_add (GTK_CONTAINER (box), self->priv->show_thumbnails_button);
+src/nemo-toolbar.c:353:    gtk_container_add (GTK_CONTAINER (box), self->priv->show_extra_pane_button);
+src/nemo-toolbar.c:356:    gtk_container_add (GTK_CONTAINER (box), self->priv->icon_view_button);
+src/nemo-toolbar.c:359:    gtk_container_add (GTK_CONTAINER (box), self->priv->list_view_button);
+src/nemo-toolbar.c:362:    gtk_container_add (GTK_CONTAINER (box), self->priv->compact_view_button);
+src/nemo-toolbar.c:364:    gtk_container_add (GTK_CONTAINER (tool_box), GTK_WIDGET (box));
+src/nemo-toolbar.c:365:    gtk_container_add (GTK_CONTAINER (self->priv->toolbar), GTK_WIDGET (tool_box));
+src/nemo-toolbar.c:367:    gtk_widget_show_all (GTK_WIDGET (tool_box));
+src/nemo-list-model.h:117:						     GtkTreeView *view,
+src/nemo-floating-bar.c:228:	gtk_box_pack_start (GTK_BOX (box), w, FALSE, FALSE, 0);
+src/nemo-floating-bar.c:237:	gtk_box_pack_start (GTK_BOX (box), w, FALSE, FALSE, 0);
+src/nemo-icon-view.c:2417:	gtk_container_add (GTK_CONTAINER (icon_view),
+src/nemo-icon-view.c:2617:    g_return_if_fail (gtk_bin_get_child (GTK_BIN (icon_view)) == NULL);
+libnemo-private/nemo-bookmark.c:723:	label = GTK_LABEL (gtk_bin_get_child (GTK_BIN (menu_item)));
+src/nemo-progress-info-widget.c:128:    gtk_container_add (GTK_CONTAINER (self), main_box);
+src/nemo-progress-info-widget.c:131:    gtk_box_pack_start (GTK_BOX (main_box), priv->separator, FALSE, FALSE, 5);
+src/nemo-progress-info-widget.c:136:    gtk_box_pack_start (GTK_BOX (main_box), priv->stack, FALSE, FALSE, 0);
+src/nemo-progress-info-widget.c:138:    gtk_widget_show_all (main_box);
+src/nemo-progress-info-widget.c:147:    gtk_box_pack_start (GTK_BOX (view), hbox, TRUE, TRUE, 0);
+src/nemo-progress-info-widget.c:150:    gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+src/nemo-progress-info-widget.c:165:    gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, TRUE, 2);
+src/nemo-progress-info-widget.c:175:    gtk_box_pack_start (GTK_BOX (bb), button, FALSE, FALSE, 2);
+src/nemo-progress-info-widget.c:180:    gtk_box_pack_start (GTK_BOX (bb), button, FALSE, FALSE, 2);
+src/nemo-progress-info-widget.c:183:    gtk_widget_show_all (view);
+src/nemo-progress-info-widget.c:191:    gtk_box_pack_start (GTK_BOX (view), hbox, TRUE, TRUE, 0);
+src/nemo-progress-info-widget.c:194:    gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+src/nemo-progress-info-widget.c:201:	gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, FALSE, 2);
+src/nemo-progress-info-widget.c:207:	gtk_box_pack_start(GTK_BOX (vbox), progress_bar, TRUE, FALSE, 2);
+src/nemo-progress-info-widget.c:214:    gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, FALSE, 2);
+src/nemo-progress-info-widget.c:224:    gtk_box_pack_start (GTK_BOX (bb), button, FALSE, FALSE, 2);
+src/nemo-progress-info-widget.c:229:    gtk_box_pack_start (GTK_BOX (bb), button, FALSE, FALSE, 2);
+src/nemo-progress-info-widget.c:232:    gtk_widget_show_all (view);
+src/nemo-window-slot.c:289:    gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
+src/nemo-window-slot.c:296:    gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
+src/nemo-window-slot.c:301:    gtk_widget_show_all (box);
+src/nemo-window-slot.c:318:	gtk_box_pack_start (GTK_BOX (slot), extras_vbox, FALSE, FALSE, 0);
+src/nemo-window-slot.c:329:	gtk_box_pack_start (GTK_BOX (slot), slot->view_overlay, TRUE, TRUE, 0);
+src/nemo-window-slot.c:646:		gtk_container_add (GTK_CONTAINER (slot->view_overlay), widget);
+src/nemo-window-slot.c:811:	gtk_box_pack_start (GTK_BOX (slot->extra_location_widgets),
+src/nemo-template-config-widget.c:240:        gtk_container_add (GTK_CONTAINER (empty_row), empty_label);
+src/nemo-template-config-widget.c:242:        gtk_widget_show_all (empty_row);
+src/nemo-template-config-widget.c:243:        gtk_container_add (GTK_CONTAINER (NEMO_CONFIG_BASE_WIDGET (widget)->listbox), empty_row);
+src/nemo-template-config-widget.c:257:            gtk_box_pack_start (GTK_BOX (box), w, FALSE, FALSE, 0);
+src/nemo-template-config-widget.c:265:            gtk_box_pack_start (GTK_BOX (box), w, FALSE, FALSE, 2);
+src/nemo-template-config-widget.c:269:            gtk_box_pack_start (GTK_BOX (box), w, TRUE, TRUE, 0);
+src/nemo-template-config-widget.c:277:            gtk_container_add (GTK_CONTAINER (row), box);
+src/nemo-template-config-widget.c:281:            gtk_widget_show_all (row);
+src/nemo-template-config-widget.c:282:            gtk_container_add (GTK_CONTAINER (NEMO_CONFIG_BASE_WIDGET (widget)->listbox), row);
+src/nemo-template-config-widget.c:339:    gtk_box_pack_start (GTK_BOX (content), entry, FALSE, FALSE, 0);
+src/nemo-template-config-widget.c:343:    gtk_widget_show_all (rename_dialog);
+src/nemo-template-config-widget.c:344:    response = gtk_dialog_run (GTK_DIALOG (rename_dialog));
+src/nemo-template-config-widget.c:440:    response = gtk_dialog_run (GTK_DIALOG (dialog));
+src/nemo-template-config-widget.c:619:    gtk_box_pack_start (GTK_BOX (bb),
+src/nemo-template-config-widget.c:628:    gtk_box_pack_start (GTK_BOX (bb),
+src/nemo-template-config-widget.c:638:    gtk_box_pack_start (GTK_BOX (bb),
+src/nemo-template-config-widget.c:648:    gtk_box_pack_start (GTK_BOX (bb),
+libnemo-private/nemo-places-tree-view.h:42:	GtkTreeView parent;
+
+[SECURITY_EXEC_SCAN]
+libnemo-private/nemo-action.c:1716:    if (!g_spawn_command_line_sync (exec->str,
+libnemo-private/nemo-file-utilities.c:326:    g_spawn_sync (NULL,
+src/nemo-thumbnail-problem-bar.c:62:            g_spawn_command_line_sync ("sh -c \"pkexec nemo --fix-cache\"", NULL, NULL, NULL, NULL);
+src/nemo-extension-config-widget.c:150:    if (g_spawn_command_line_sync (LIBEXECDIR "/nemo-extensions-list",
+src/nemo-view.c:7124:    g_spawn_async(NULL, argv, NULL, G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,
+src/nemo-view.c:7148:    g_spawn_async (path, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+src/nemo-window-menus.c:1342:    g_spawn_async (path, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+src/nemo-autorun-software.c:142:                        execl (path_to_spawn, path_to_spawn, program_parameter, NULL);
+
+[DESKTOP_NETWORK_SCAN]
+NO_MATCH
+
+[OBSERVABILITY_SCAN - first 120 lines]
+eel/eel-gnome-extensions.c:158:		g_message ("Could not start application on terminal: %s", error->message);
+eel/eel-gnome-extensions.c:160:		g_error_free (error);
+eel/meson.build:28:  c_args: '-DG_LOG_DOMAIN="Eel"'
+eel/eel-accessibility.c:237:		g_warning ("No accessible text interface on '%s'",
+eel/eel-canvas.c:215:		    g_warning ("Cannot set `parent' argument after item has "
+eel/eel-canvas.c:514:                g_warning ("Item type %s does not implement translate method.\n",
+eel/eel-canvas.c:2357:	g_error ("Eeeek, root item %p of canvas %p was destroyed!", object, data);
+libnemo-private/nemo-separator-action.c:74:  g_warning ("NemoSeparatorAction: Toolbar items unsupported at this time.");
+libnemo-private/nemo-undo-signal-handlers.c:152:		g_warning ("Undo data is NULL");
+libnemo-private/nemo-undo-signal-handlers.c:237:		g_warning ("Undo regisetred flag not found");
+libnemo-private/nemo-job-queue.c:188:		g_warning ("Adding the same file job object to the job queue");
+libnemo-private/nemo-dnd.c:232:				g_warning ("Invalid x-special/gnome-icon-list data received: "
+libnemo-private/nemo-dnd.c:250:			g_warning ("Invalid x-special/gnome-icon-list data received: "
+libnemo-private/nemo-dnd.c:258:			g_warning ("Invalid x-special/gnome-icon-list data received: "
+libnemo-private/nemo-dnd.c:533:                    g_warning ("Cannot fetch filesystem type for drag involving the desktop: %s", error->message);
+libnemo-private/nemo-file.h:652:        g_message ("%s: %p - %s", msg, f, uri);                 \
+libnemo-private/nemo-debug.c:110:    g_logv (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, format, args);
+libnemo-private/nemo-debug.c:131:  g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s:", msg);
+libnemo-private/nemo-debug.c:149:      g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "   %s", uri);
+src/nemo-icon-view.c:449:		g_warning ("nemo_icon_view_remove_file() - directory not icon view model, shouldn't happen.\n"
+libnemo-private/nemo-file-undo-manager.c:210:		g_warning ("Called redo, but state is %s!", self->priv->state == 0 ?
+libnemo-private/nemo-file-undo-manager.c:224:		g_warning ("Called undo, but state is %s!", self->priv->state == 0 ?
+libnemo-private/nemo-action-manager.c:318:                g_critical ("Error loading action layout file: %s\n", error->message);
+libnemo-private/nemo-action-manager.c:591:    *error = g_error_new_literal (json_parser_error_quark (),
+libnemo-private/nemo-action-manager.c:762:                idata->error = g_error_copy (json_reader_get_error (reader));
+libnemo-private/nemo-action-manager.c:775:        idata->error = g_error_new (json_parser_error_quark (),
+libnemo-private/nemo-action-manager.c:798:        idata->error = g_error_copy (json_reader_get_error (reader));
+libnemo-private/nemo-action-manager.c:802:        g_critical ("Structured actions couldn't be set up: %p %s", idata->error, idata->error->message);
+libnemo-private/nemo-link.c:80:		g_warning ("Error getting info: %s\n", error->message);
+libnemo-private/nemo-link.c:81:		g_error_free (error);
+libnemo-private/nemo-mime-application-chooser.c:116:			g_error_free (error);
+libnemo-private/nemo-global-preferences.c:259:                    g_warning ("Unable to retrieve list of file-roller mimetypes");
+libnemo-private/nemo-icon-container.c:7421:		g_warning ("Invalid action passed to NemoIconContainerAccessible::do_action");
+src/nemo-empty-view.c:66:	g_message ("entire loading: %.3f, cumulative %.3f", elaps, cumu);
+libnemo-private/nemo-widget-action.c:227:  g_warning ("NemoWidgetAction: Toolbar items unsupported at this time.");
+libnemo-private/nemo-desktop-directory.c:184:		g_warning ("tried to add a new callback while an old one was pending");
+libnemo-private/nemo-file.c:444:		g_error_free (file->details->get_info_error);
+libnemo-private/nemo-file.c:619:		g_warning ("Adding file to symlink_table multiple times. "
+libnemo-private/nemo-file.c:808:		g_error_free (file->details->get_info_error);
+libnemo-private/nemo-file.c:1242:			g_error_free (error);
+libnemo-private/nemo-file.c:1287:				g_error_free (error);
+libnemo-private/nemo-file.c:1321:				g_error_free (error);
+libnemo-private/nemo-file.c:1354:			g_error_free (error);
+libnemo-private/nemo-file.c:1378:		g_error_free (error);
+libnemo-private/nemo-file.c:1384:		g_error_free (error);
+libnemo-private/nemo-file.c:1406:				g_error_free (error);
+libnemo-private/nemo-file.c:1437:				g_error_free (error);
+libnemo-private/nemo-file.c:1847:		g_error_free (error);
+libnemo-private/nemo-file.c:1880:		g_error_free (error);
+libnemo-private/nemo-file.c:1915:		error = g_error_new (G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+libnemo-private/nemo-file.c:1918:		g_error_free (error);
+libnemo-private/nemo-file.c:1933:		error = g_error_new (G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
+libnemo-private/nemo-file.c:1936:		g_error_free (error);
+libnemo-private/nemo-file.c:1961:		error = g_error_new (G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+libnemo-private/nemo-file.c:1965:		g_error_free (error);
+libnemo-private/nemo-file.c:1984:			error = g_error_new (G_IO_ERROR, G_IO_ERROR_FAILED,
+libnemo-private/nemo-file.c:1987:			g_error_free (error);
+libnemo-private/nemo-file.c:2013:			error = g_error_new (G_IO_ERROR, G_IO_ERROR_FAILED,
+libnemo-private/nemo-file.c:2016:			g_error_free (error);
+libnemo-private/nemo-file.c:3922:		g_error ("boolean metadata with value other than true or false");
+libnemo-private/nemo-file.c:4517:            g_warning ("Could not remove failed thumbnail marker for '%s'. The path was '%s'",
+libnemo-private/nemo-file.c:4546:        g_warning ("Could not remove thumb for '%s'.  The thumbnail path is '%s'",
+libnemo-private/nemo-file.c:5567:		g_error_free (error);
+libnemo-private/nemo-file.c:5598:		g_error_free (error);
+libnemo-private/nemo-file.c:5720:		error = g_error_new (G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED,
+libnemo-private/nemo-file.c:5723:		g_error_free (error);
+libnemo-private/nemo-file.c:6017:		error = g_error_new (G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED,
+libnemo-private/nemo-file.c:6020:		g_error_free (error);
+libnemo-private/nemo-file.c:6035:		error = g_error_new (G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+libnemo-private/nemo-file.c:6038:		g_error_free (error);
+libnemo-private/nemo-file.c:6262:		g_warning ("unhandled case in nemo_get_settable_group_names");
+libnemo-private/nemo-file.c:6300:		error = g_error_new (G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED,
+libnemo-private/nemo-file.c:6303:		g_error_free (error);
+libnemo-private/nemo-file.c:6318:		error = g_error_new (G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+libnemo-private/nemo-file.c:6321:		g_error_free (error);
+libnemo-private/nemo-file.c:7512:		g_warning ("File has symlink target, but  is not marked as symlink");
+libnemo-private/nemo-file.c:7534:		g_warning ("File has symlink target, but  is not marked as symlink");
+libnemo-private/nemo-file.c:9086:        g_warning ("Search hits directory already existed - %s", nemo_file_peek_name (file));
+libnemo-private/nemo-file.c:9103:        g_warning ("Attempting to remove search hits that don't exist - %s", nemo_file_peek_name (file));
+libnemo-private/nemo-thumbnails.c:149:    g_message ("Thumbnailer threads: %d (setting: %d, system count: %d)", max_threads, pref, num_processors);
+libnemo-private/nemo-thumbnails.c:357:            g_error_free (err);
+libnemo-private/nemo-thumbnails.c:396:    g_message ("%u unprocessed (Done) (%u threads free)",
+libnemo-private/nemo-thumbnails.c:425:    g_message ("Pop from feeder (Add) %i items in feeder", g_async_queue_length (feeder_queue));
+libnemo-private/nemo-thumbnails.c:439:                    g_message ("%u unprocessed (Add)", g_thread_pool_unprocessed ((GThreadPool *) tpool));
+libnemo-private/nemo-thumbnails.c:604:    g_message ("Push to feeder (Add) %i items in feeder", g_async_queue_length (feeder_queue));
+libnemo-private/nemo-thumbnails.c:624:    g_message ("Push to feeder (Remove) %i items in feeder", g_async_queue_length (feeder_queue));
+libnemo-private/nemo-thumbnails.c:644:    g_message ("Push to feeder (Bump) %i items in feeder", g_async_queue_length (feeder_queue));
+libnemo-private/nemo-vfs-file.c:106:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:137:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:398:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:420:			g_error_free (error);
+libnemo-private/nemo-vfs-file.c:460:	    g_error_free (error);
+libnemo-private/nemo-vfs-file.c:466:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:515:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:521:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:570:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:576:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:598:			g_error_free (error);
+libnemo-private/nemo-vfs-file.c:638:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:644:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:693:		g_error_free (error);
+libnemo-private/nemo-vfs-file.c:699:		g_error_free (error);
+libnemo-private/nemo-merged-directory.c:174:		g_warning ("tried to add a new callback while an old one was pending");
+libnemo-private/nemo-program-choosing.c:401:		g_error_free (error);
+libnemo-private/nemo-file-undo-operations.c:127:	g_critical ("Object %p of type %s does not implement redo_func!!", 
+libnemo-private/nemo-file-undo-operations.c:135:	g_critical ("Object %p of type %s does not implement undo_func!!", 
+libnemo-private/nemo-file-undo-operations.c:317:				       g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED));
+libnemo-private/nemo-desktop-metadata.c:75:		g_warning ("Couldn't save the desktop metadata keyfile to disk: %s",
+libnemo-private/nemo-desktop-metadata.c:77:		g_error_free (error);
+libnemo-private/nemo-desktop-metadata.c:111:		if (!g_error_matches (error,
+libnemo-private/nemo-desktop-metadata.c:118:		g_error_free (error);
+libnemo-private/nemo-desktop-metadata.c:166:                g_warning ("Problem setting metadata for %s: %s", name, error->message);
+libnemo-private/nemo-desktop-metadata.c:169:            g_error_free (error);
+libnemo-private/nemo-search-engine-tracker.c:116:		g_error_free (error);
+libnemo-private/nemo-search-engine-tracker.c:161:		g_error_free (error);
+libnemo-private/nemo-search-engine-tracker.c:335:		g_warning ("Could not establish a connection to Tracker: %s", error->message);
+libnemo-private/nemo-search-engine-tracker.c:336:		g_error_free (error);
+libnemo-private/nemo-search-engine-advanced.c:164:        g_warning ("Nemo search_helper file is missing group '%s' - %s", SEARCH_HELPER_GROUP, path);
+libnemo-private/nemo-search-engine-advanced.c:171:        g_warning ("Nemo search_helper file is missing mandatory fields - you must have TryExec, Exec and MimeType, "
+libnemo-private/nemo-search-engine-advanced.c:201:        g_warning ("Nemo search_helper no mimetypes defined - %s", path);
+
+[PACKAGING_PORTAL_SCAN]

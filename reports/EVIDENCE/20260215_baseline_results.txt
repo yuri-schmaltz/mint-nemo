@@ -1,0 +1,172 @@
+[ENV]
+2026-02-15T19:43:31-03:00
+Linux workstation 6.8.0-100-generic #100-Ubuntu SMP PREEMPT_DYNAMIC Tue Jan 13 16:40:06 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+Distributor ID:	Linuxmint
+Description:	Linux Mint 22.3
+Release:	22.3
+Codename:	zena
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
+1.3.2
+1.11.1
+3.24.41
+
+[NEMO_VERSION_TIME]
+Could not parse arguments: Cannot open display: 
+Command exited with non-zero status 1
+elapsed=0.02 user=0.01 sys=0.01 maxrss_kb=18560 exit=1
+
+[NEMO_QUIT_TIME]
+Could not parse arguments: Cannot open display: 
+Command exited with non-zero status 1
+elapsed=0.02 user=0.01 sys=0.00 maxrss_kb=18560 exit=1
+
+[NEMO_QUIT_XVFB]
+xvfb-run not available
+
+[MESON_SETUP_BASELINE - tail]
+Configuring nemo-action-layout-editor using configuration
+Has header "gdk/gdkwayland.h" with dependency gtk+-3.0: YES 
+Message: 
+        nemo-6.6.2
+
+    prefix:                 /usr/local
+    source code location:   /home/yurix/Documentos/mint-nemo
+    compiler:               gcc
+    libexif support:        true
+    exempi  support:        true
+    Tracker support:        false
+    Wayland support:        true
+
+    nemo-extension documentation: false
+    nemo-extension introspection: true
+
+    debugging support:      debug
+    perf profiling support: true
+
+Build targets in project: 23
+NOTICE: Future-deprecated features used:
+ * 0.60.0: {'install_subdir with empty directory'}
+
+Found ninja-1.11.1 at /usr/bin/ninja
+Generating targets:   0%|          | 0/23 eta ?Generating targets:  83%|████████▎ | 19/23 eta 00:00                                                    Writing build.ninja:   0%|          | 0/290 eta ?                                                 
+[MESON_COMPILE_BASELINE - tail]
+                 from /usr/include/gtk-3.0/gtk/gtk.h:30,
+                 from ../src/nemo-properties-window.h:29,
+                 from ../src/nemo-properties-window.c:27:
+../src/nemo-properties-window.c: In function ‘get_pending_key’:
+/usr/include/glib-2.0/glib/gstring.h:74:5: warning: ignoring return value of ‘g_string_free_and_steal’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+   70 |   (__builtin_constant_p (free_segment) ?        \
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   71 |     ((free_segment) ?                           \
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   72 |       (g_string_free) ((str), (free_segment)) : \
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   73 |       g_string_free_and_steal (str))            \
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   74 |     :                                           \
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   75 |     (g_string_free) ((str), (free_segment)))
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../src/nemo-properties-window.c:4739:9: note: in expansion of macro ‘g_string_free’
+ 4739 |         g_string_free (key, FALSE);
+      |         ^~~~~~~~~~~~~
+[261/263] Linking target src/nemo
+[262/263] Compiling C object src/nemo-desktop.p/nemo-view.c.o
+[263/263] Linking target src/nemo-desktop
+INFO: autodetecting backend as ninja
+INFO: calculating backend command to run: /usr/bin/ninja -C /home/yurix/Documentos/mint-nemo/build-orch-baseline
+
+[MESON_TEST_BASELINE]
+ninja: Entering directory `/home/yurix/Documentos/mint-nemo/build-orch-baseline'
+ninja: no work to do.
+1/1 Eel test FAIL            0.20s   killed by signal 5 SIGTRAP
+>>> UBSAN_OPTIONS=halt_on_error=1:abort_on_error=1:print_summary=1:print_stacktrace=1 ASAN_OPTIONS=halt_on_error=1:abort_on_error=1:print_summary=1 MALLOC_PERTURB_=111 /home/yurix/Documentos/mint-nemo/build-orch-baseline/eel/check-program --g-fatal-warnings --sm-disable
+――――――――――――――――――――――――――――――――――――― ✀  ―――――――――――――――――――――――――――――――――――――
+stderr:
+
+(check-program:3402512): Gtk-WARNING **: 19:43:54.044: cannot open display: :0
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+
+Summary of Failures:
+
+1/1 Eel test FAIL            0.20s   killed by signal 5 SIGTRAP
+
+Ok:                 0   
+Expected Fail:      0   
+Fail:               1   
+Unexpected Pass:    0   
+Skipped:            0   
+Timeout:            0   
+
+Full log written to /home/yurix/Documentos/mint-nemo/build-orch-baseline/meson-logs/testlog.txt
+
+[SMOKE_NEMO_HELP]
+Usage:
+  nemo [OPTION…] [URI...] 
+
+Browse the file system with the file manager
+
+Help Options:
+  -h, --help                  Show help options
+  --help-all                  Show all help options
+  --help-gtk                  Show GTK+ Options
+
+Application Options:
+  --version                   Show the version of the program.
+  -g, --geometry=GEOMETRY     Create the initial window with the given geometry. Examples: nemo --geometry=+100+100, nemo --geometry=600x400, nemo --geometry=600x400+100+100.
+  -n, --no-default-window     Only create windows for explicitly specified URIs.
+  --no-desktop                Ignored argument - left for compatibility only.
+  -t, --tabs                  Open URIs in tabs.
+  --existing-window           Open URIs in an existing window.
+  --fix-cache                 Repair the user thumbnail cache - this can be useful if you're having trouble with file thumbnails.  Must be run as root
+  --debug                     Enable debugging code.  Example usage: 'NEMO_DEBUG=Actions,Window nemo --debug'.  Use NEMO_DEBUG=help for more topics.
+  -q, --quit                  Quit Nemo.
+  --display=DISPLAY           X display to use
+
+elapsed=0.02 user=0.01 sys=0.00 maxrss_kb=17920 exit=0
+
+[SMOKE_CONNECT_SERVER_HELP]
+Usage:
+  nemo-connect-server [OPTION…] 
+
+Add connect to server mount
+
+Help Options:
+  -h, --help               Show help options
+  --help-all               Show all help options
+  --help-gtk               Show GTK+ Options
+
+Application Options:
+  --print-uri              Print but do not open the URI
+  --display=DISPLAY        X display to use
+
+elapsed=0.02 user=0.01 sys=0.00 maxrss_kb=15040 exit=0
+
+[SMOKE_OPEN_WITH_HELP]
+Usage:
+  nemo-open-with [OPTION…] 
+
+Show an open-with dialog given a uri, to allow the user to change the default mimetype handler.
+
+Help Options:
+  -h, --help               Show help options
+  --help-all               Show all help options
+  --help-gtk               Show GTK+ Options
+
+Application Options:
+  --display=DISPLAY        X display to use
+
+elapsed=0.02 user=0.01 sys=0.01 maxrss_kb=15360 exit=0
+
+[SMOKE_OPEN_WITH_NO_URI]
+
+(nemo-open-with:3402964): Nemo-CRITICAL **: 19:44:48.345: Failed to parse arguments: Cannot open display: 
+Command exited with non-zero status 1
+elapsed=0.02 user=0.01 sys=0.00 maxrss_kb=16000 exit=1
+
+[SMOKE_CONNECT_SERVER_PRINT_URI]
+
+(nemo-connect-server:3402963): Nemo-CRITICAL **: 19:44:48.345: Failed to parse arguments: Cannot open display: 
+Command exited with non-zero status 1
+elapsed=0.02 user=0.01 sys=0.00 maxrss_kb=16320 exit=1

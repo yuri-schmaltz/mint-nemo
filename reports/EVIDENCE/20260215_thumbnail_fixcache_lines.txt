@@ -1,0 +1,56 @@
+    40	    DISMISS
+    41	};
+    42	
+    43	struct NemoThumbnailProblemBarPrivate
+    44	{
+    45		NemoView *view;
+    46		gulong selection_handler_id;
+    47	};
+    48	
+    49	G_DEFINE_TYPE (NemoThumbnailProblemBar, nemo_thumbnail_problem_bar, GTK_TYPE_INFO_BAR);
+    50	
+    51	static void
+    52	thumbnail_problem_bar_response_cb (GtkInfoBar *infobar,
+    53	                                          gint  response_id,
+    54	                                      gpointer  user_data)
+    55	{
+    56	    NemoThumbnailProblemBar *bar;
+    57	
+    58	    bar = NEMO_THUMBNAIL_PROBLEM_BAR (infobar);
+    59	
+    60	    switch (response_id) {
+    61	        case FIX_CACHE:
+    62	            g_spawn_command_line_sync ("sh -c \"pkexec nemo --fix-cache\"", NULL, NULL, NULL, NULL);
+    63	            nemo_application_check_thumbnail_cache (nemo_application_get_singleton ());
+    64	            nemo_window_slot_queue_reload (nemo_view_get_nemo_window_slot (bar->priv->view), FALSE);
+    65	            nemo_window_slot_check_bad_cache_bar (nemo_view_get_nemo_window_slot (bar->priv->view));
+    66	            break;
+    67	        case DISMISS:
+    68	            nemo_application_clear_cache_flag (nemo_application_get_singleton ());
+    69	            nemo_application_ignore_cache_problem (nemo_application_get_singleton ());
+    70	            gtk_widget_hide (GTK_WIDGET (infobar));
+    71	            break;
+    72	        default:
+    73	            break;
+    74	    }
+    75	}
+    76	
+    77	static void
+    78	nemo_thumbnail_problem_bar_set_property (GObject      *object,
+    79					 guint         prop_id,
+    80					 const GValue *value,
+    81					 GParamSpec   *pspec)
+    82	{
+    83		NemoThumbnailProblemBar *bar;
+    84	
+    85		bar = NEMO_THUMBNAIL_PROBLEM_BAR (object);
+    86	
+    87		switch (prop_id) {
+    88	    	case PROP_VIEW:
+    89	    		bar->priv->view = g_value_get_object (value);
+    90	    		break;
+    91	    	default:
+    92	    		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    93	    		break;
+    94	    }
+    95	}

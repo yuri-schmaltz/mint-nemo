@@ -1,40 +1,35 @@
 # SYSTEM_MAP
 
 ## Componentes
-- `meson.build`: orquestra build, dependências GTK3/Cinnamon/XApp e subdiretórios (`meson.build:72` a `meson.build:85`, `meson.build:179` a `meson.build:192`).
-- `src/meson.build`: define executáveis principais (`src/meson.build:116`, `src/meson.build:124`, `src/meson.build:132`, `src/meson.build:140`).
-- `libnemo-private/`: biblioteca interna com ações, busca, operações de arquivo e integração UI.
-- `eel/`: utilitários/abstrações GTK/GDK e teste unitário (`eel/meson.build:40`).
-- `gresources/`: assets UI (Glade/UI/CSS) carregados pela aplicação.
-- `debian/`: empacotamento e flags de configuração (`debian/rules:6` a `debian/rules:11`).
+- Build system: Meson/Ninja (`meson.build`, `reports/EVIDENCE/20260215_env_toolchain.log`).
+- Core app: `src/nemo` (GtkApplication) (`reports/EVIDENCE/20260215_entrypoints.log`).
+- Desktop mode: `src/nemo-desktop` (desktop window manager integrado ao Nemo).
+- Bibliotecas internas: `libnemo-private/`, `eel/`, `libnemo-extension/`.
+- UI declarativa: arquivos Glade/UI em `gresources/` (`reports/EVIDENCE/20260215_ui_files.log`).
+- CI: workflow em `.github/workflows/build.yml` chamando reusable pipeline externo (`reports/EVIDENCE/20260215_build_workflow_lines.txt`).
 
-## Fluxos E2E críticos (3-5)
-1. Início do gerenciador de arquivos:
-- Entrada: `nemo` (`src/meson.build:116`).
-- Caminho: inicialização app/janela (`src/nemo-main.c`, `src/nemo-window.c`).
-- Saída: janela principal com navegação e painéis.
+## Fluxos E2E (automatizáveis nesta execução)
+1. Configuração de build.
+Comando: `meson setup build-orch-baseline`.
+Evidência: `reports/EVIDENCE/20260215_meson_setup_baseline.log`.
 
-2. Modo desktop:
-- Entrada: `nemo-desktop` (`src/meson.build:124`).
-- Caminho: app desktop + overlay (`src/nemo-desktop-main.c`, `src/nemo-desktop-overlay.c`).
-- Saída: ícones e overlay no desktop.
+2. Compilação completa de binários.
+Comando: `meson compile -C build-orch-baseline`.
+Evidência: `reports/EVIDENCE/20260215_meson_compile_baseline.log`.
 
-3. Conectar a servidor remoto:
-- Entrada: `nemo-connect-server` (`src/meson.build:140`).
-- Caminho: diálogo e operação de conexão (`src/nemo-connect-server-dialog.c`, `src/nemo-connect-server-operation.c`).
-- Saída: montagem/abertura de localização remota.
+3. Execução de suíte nativa (`Eel test`).
+Comando: `meson test -C build-orch-baseline --print-errorlogs`.
+Evidência: `reports/EVIDENCE/20260215_meson_test_baseline.log`.
 
-4. Ações customizadas (Nemo Actions):
-- Entrada: carregamento/layout de ações (`libnemo-private/nemo-action-manager.c`).
-- Caminho: parsing/configuração e integração em UI manager (`libnemo-private/nemo-ui-utilities.c`).
-- Saída: ações em menu/toolbar/contexto.
+4. Smoke CLI do binário principal.
+Comando: `build-orch-baseline/src/nemo --help`.
+Evidência: `reports/EVIDENCE/20260215_smoke_nemo_help.log`.
 
-5. Busca avançada e helpers:
-- Entrada: query no editor (`src/nemo-query-editor.c`).
-- Caminho: engine de busca e subprocessos auxiliares (`libnemo-private/nemo-search-engine-advanced.c`).
-- Saída: resultados de busca em view.
+5. Smoke CLI de utilitários.
+Comandos: `build-orch-baseline/src/nemo-connect-server --help`, `build-orch-baseline/src/nemo-open-with --help`.
+Evidência: `reports/EVIDENCE/20260215_smoke_connect_server_help.log`, `reports/EVIDENCE/20260215_smoke_open_with_help.log`.
 
-## Integrações externas
-- GTK3/GIO/GLib, Cinnamon Desktop, XApp (`meson.build:72` a `meson.build:85`).
-- DBus codegen para interfaces freedesktop/cinnamon (`src/meson.build:1` a `src/meson.build:15`).
-- Empacotamento Debian (`debian/control`, `debian/rules`).
+## Fluxos críticos não verificáveis no ambiente atual
+- Fluxo visual com janela GTK renderizada e screenshot baseline.
+Bloqueio: ausência de display + ausência de `xvfb-run`.
+Evidência: `reports/EVIDENCE/20260215_nemo_quit_xvfb.log`.

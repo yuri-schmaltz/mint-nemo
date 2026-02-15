@@ -1,39 +1,46 @@
 # BASELINE
 
-Data: 2026-02-15
-Escopo: baseline automatizado antes e depois das ondas incrementais.
+Data da execução: 2026-02-15
+Escopo: Fase 0 (autodescoberta) + Fase 1 (baseline automático antes de mudanças).
 
 ## Descoberto
-- Stack principal C + Meson + GTK3 (`meson.build:4`, `meson.build:73`).
-- Dependências desktop: Cinnamon/XApp/X11 (`meson.build:82` a `meson.build:85`).
-- Teste Meson detectado: `Eel test` (`eel/meson.build:40`).
-- CI build detectado em workflow reutilizável (`.github/workflows/build.yml:20`).
-- Ambiente local com toolchain completo (`reports/EVIDENCE/10_env_toolchain.log`).
+- Stack principal C + Meson (`meson.build:4`) com UI GTK3 (`meson.build:73`).
+- Dependências desktop/X11/Cinnamon detectadas (`meson.build:82`, `meson.build:83`, `meson.build:84`, `meson.build:85`).
+- Teste automatizado nativo detectado: `Eel test` (`eel/meson.build:40`).
+- Workflow de CI usa reusable workflow externo (`.github/workflows/build.yml:20`).
+- Recursos de UI em Glade/UI detectados (`reports/EVIDENCE/20260215_ui_files.log`).
 
 ## ASSUMIDO
-- Defaults de opções Meson inferidos de empacotamento e histórico local quando ausentes (`debian/rules:9` a `debian/rules:11`, `debian/changelog` em `reports/EVIDENCE/18_changelog_options_context.log`).
-  - Justificativa: checkout sem `meson_options.txt` inicialmente.
-  - Risco: divergência pontual de defaults em forks/branches alternativos.
-- `empty_view=false` adotado como escolha conservadora para manter build funcional neste checkout (evita compilar unidade com símbolo ausente observado em `reports/EVIDENCE/57_meson_compile_wave3b_retry.log`).
+- Opção conservadora: não alterar código funcional do produto nesta execução; somente orquestração, evidência e priorização em `reports/`.
+Justificativa: pedido focado em fluxo completo + relatórios + commits incrementais.
+Risco: backlog de correções técnicas fica planejado, não executado nesta rodada.
+
+- Opção conservadora para visual headless: sem instalar pacotes no host e sem mudar ambiente do usuário.
+Justificativa: `xvfb-run` ausente e política de execução sem intervenção.
+Risco: validação visual pixel-perfect/a11y automatizada permanece pendente.
 
 ## NÃO VERIFICADO
-- Regressão visual pixel-perfect e a11y por screenshot headless: sem Xvfb (`reports/EVIDENCE/20_xvfb_tools.log`, `reports/EVIDENCE/21_ui_validate_xvfb.log`).
-- Startup/idle metrics com UI real: ambiente sem display (`reports/EVIDENCE/12_system_nemo_baseline.log`).
+- Regressão visual por breakpoint (AEGIS) com screenshots automatizadas.
+Evidência: `reports/EVIDENCE/20260215_nemo_quit_xvfb.log`.
+
+- Startup real de UI (janela aberta, idle CPU/RAM em sessão gráfica ativa).
+Evidência: `reports/EVIDENCE/20260215_nemo_version_time.log`, `reports/EVIDENCE/20260215_nemo_quit_time.log`.
 
 ## Metodologia
-1. Fase 0: autodescoberta de stack/build/UI/testes/CI (`reports/EVIDENCE/01_build_gtk_scan.log`, `reports/EVIDENCE/02_tests_ci_scan.log`, `reports/EVIDENCE/03_ui_scan.log`).
-2. Fase 1: baseline pré-mudança (`reports/EVIDENCE/14_meson_setup_baseline.log`, `reports/EVIDENCE/15_meson_compile_baseline.log`, `reports/EVIDENCE/16_meson_test_baseline.log`).
-3. Fases 2-4: execução incremental, revalidação e comparação (`reports/EVIDENCE/40_meson_setup_wave2.log`, `reports/EVIDENCE/54_meson_setup_wave3b.log`, `reports/EVIDENCE/60_meson_setup_wave4.log`, `reports/EVIDENCE/61_meson_compile_wave4.log`, `reports/EVIDENCE/62_meson_test_wave4.log`).
+1. Descoberta de stack/UI/testes/CI por varredura (`reports/EVIDENCE/20260215_analysis_results.txt`).
+2. Baseline de build: `meson setup` e `meson compile` em `build-orch-baseline`.
+3. Baseline funcional mínimo: `meson test` e smoke CLI dos binários principais.
+4. Consolidação de evidências versionáveis em `.txt` dentro de `reports/EVIDENCE/`.
 
-## Métricas (ANTES vs DEPOIS)
-| Dimensão | Antes | Depois |
+## Métricas Baseline (antes de mudanças)
+| Item | Resultado | Evidência |
 |---|---|---|
-| `meson setup` | FAIL (`unknown option 'deprecated_warnings'`) | PASS (`Exit status: 0`) |
-| `meson compile` | FAIL (sem build válido) | PASS (`Exit status: 0`) |
-| `meson test` | FAIL (sem build válido) | FAIL (`cannot open display`) |
-| Startup probe (`nemo --version`) | FAIL (`Cannot open display`) | FAIL (mesma limitação ambiental) |
-| UI headless/screenshot | NÃO VERIFICADO | NÃO VERIFICADO |
-
-Evidências principais:
-- Antes: `reports/EVIDENCE/14_meson_setup_baseline.log`, `reports/EVIDENCE/15_meson_compile_baseline.log`, `reports/EVIDENCE/16_meson_test_baseline.log`.
-- Depois: `reports/EVIDENCE/60_meson_setup_wave4.log`, `reports/EVIDENCE/61_meson_compile_wave4.log`, `reports/EVIDENCE/62_meson_test_wave4.log`.
+| `meson setup -C build-orch-baseline` | PASS | `reports/EVIDENCE/20260215_meson_setup_baseline.log` |
+| `meson compile -C build-orch-baseline` | PASS | `reports/EVIDENCE/20260215_meson_compile_baseline.log` |
+| `meson test -C build-orch-baseline` | FAIL (`cannot open display`) | `reports/EVIDENCE/20260215_meson_test_baseline.log` |
+| `nemo --version` (sistema) | FAIL (`Cannot open display`) | `reports/EVIDENCE/20260215_nemo_version_time.log` |
+| `nemo --quit` (sistema) | FAIL (`Cannot open display`) | `reports/EVIDENCE/20260215_nemo_quit_time.log` |
+| `xvfb-run -a nemo --quit` | FAIL (`xvfb-run not available`) | `reports/EVIDENCE/20260215_nemo_quit_xvfb.log` |
+| `build-orch-baseline/src/nemo --help` | PASS | `reports/EVIDENCE/20260215_smoke_nemo_help.log` |
+| `build-orch-baseline/src/nemo-connect-server --help` | PASS | `reports/EVIDENCE/20260215_smoke_connect_server_help.log` |
+| `build-orch-baseline/src/nemo-open-with --help` | PASS | `reports/EVIDENCE/20260215_smoke_open_with_help.log` |
