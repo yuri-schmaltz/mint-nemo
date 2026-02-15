@@ -13,6 +13,10 @@
 - Mudanças pequenas, incrementais e reversíveis. Sempre inclua rollback.
 - Evite comandos destrutivos (rebase forçado, limpeza agressiva) salvo absoluta necessidade e com mitigação explícita.
 
+## Dependências faltantes
+- Sempre que houver dependências faltantes para concluir o processo, instalar automaticamente antes de encerrar com FAIL.
+- Se a instalação exigir privilégios não disponíveis, tentar alternativa sem root (user-space) e registrar evidência do bloqueio/remediação aplicada.
+
 ## Saídas padrão (sempre gerar)
 - Criar `reports/` contendo:
   - `reports/EXEC_SUMMARY.md`
