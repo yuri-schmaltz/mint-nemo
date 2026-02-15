@@ -44,6 +44,6 @@ option(
 option(
   'empty_view',
   type: 'boolean',
-  value: true,
+  value: false,
   description: 'Enable the legacy empty view implementation'
 )

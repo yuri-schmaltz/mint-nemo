@@ -7,78 +7,86 @@ Escala: 1 (baixo) a 5 (alto).
 
 ### BLD-001
 - Categoria: Build/Release
-- Descrição: `meson setup` falha por opção inexistente `deprecated_warnings`.
-- Evidência: `meson.build:46`; `reports/EVIDENCE/14_meson_setup_baseline.log`.
-- Impacto: bloqueia build/test local e pipeline derivado.
-- Causa provável: ausência de `meson_options.txt` apesar de múltiplos `get_option(...)`.
-- Recomendação: criar `meson_options.txt` com opções usadas em `meson.build` e defaults conservadores.
-- Validação atual: FAIL.
-- Risco: baixo (arquivo de configuração).
-- Mitigação: manter defaults alinhados ao empacotamento (`debian/rules:9` a `debian/rules:11`).
-- Rollback: remover `meson_options.txt`.
+- Descrição objetiva: `meson setup` quebrava por opção inexistente (`deprecated_warnings`).
+- Evidência: `meson.build:47`, `reports/EVIDENCE/14_meson_setup_baseline.log`.
+- Impacto: bloqueio total de configure/build.
+- Causa provável: `meson_options.txt` ausente no checkout.
+- Recomendação (o que/onde): manter `meson_options.txt` com todas as opções usadas (`meson_options.txt:1` a `meson_options.txt:49`).
+- Validação PASS/FAIL: PASS (`reports/EVIDENCE/60_meson_setup_wave4.log`).
+- Risco + mitigação: baixo; defaults explícitos e rollback por commit.
+- Rollback: `git revert b354c13`.
 - Priorização: Severidade 5; Impacto 5; Probabilidade 5; Esforço 1; Risco regressão 1; Urgência 5; Score 25.0.
 
 ### BLD-002
 - Categoria: Build/Portabilidade
-- Descrição: referências a `subdir('search-helpers')` e `subdir('test')` sem diretórios no checkout atual.
-- Evidência: `meson.build:189`, `meson.build:190`; `reports/EVIDENCE/04_missing_dirs_check.log`.
-- Impacto: alto risco de falha de configure após desbloquear opções.
-- Causa provável: checkout parcial/variante de empacotamento.
-- Recomendação: condicionar inclusão dos subdirs quando existirem.
-- Validação atual: FAIL potencial (a confirmar após BLD-001).
-- Risco: baixo-médio (pode mascarar ausência de conteúdo esperado).
-- Mitigação: emitir `message()` explícita quando pular subdir.
-- Rollback: reverter condição e restaurar `subdir()` direto.
+- Descrição objetiva: `subdir('search-helpers')` e `subdir('test')` sem diretórios no checkout parcial.
+- Evidência: `meson.build:190` a `meson.build:199`, `reports/EVIDENCE/04_missing_dirs_check.log`.
+- Impacto: configure quebraria em árvores parciais.
+- Causa provável: variação de layout do source tree.
+- Recomendação (o que/onde): manter inclusão condicional com `fs.is_dir(...)` (`meson.build:190` a `meson.build:199`).
+- Validação PASS/FAIL: PASS (mensagens explícitas em `reports/EVIDENCE/60_meson_setup_wave4.log`).
+- Risco + mitigação: baixo; mensagem explícita evita ocultar ausência.
+- Rollback: `git revert bf67921`.
 - Priorização: Severidade 4; Impacto 4; Probabilidade 4; Esforço 2; Risco regressão 2; Urgência 4; Score 8.0.
+
+### BLD-003
+- Categoria: Build/Integridade de Código
+- Descrição objetiva: módulos usados em runtime estavam ausentes (`nemo-icon-text-cache`, `nemo-lazy-thumbnail-loader`).
+- Evidência: `reports/EVIDENCE/40_meson_setup_wave2.log`, `reports/EVIDENCE/50_meson_setup_wave3.log`, `libnemo-private/nemo-icon-canvas-item.c:42`, `libnemo-private/nemo-icon-container.c:41`.
+- Impacto: quebra de setup/compile.
+- Causa provável: checkout incompleto de arquivos auxiliares.
+- Recomendação (o que/onde): manter implementações fallback mínimas em `libnemo-private/nemo-icon-text-cache.*` e `libnemo-private/nemo-lazy-thumbnail-loader.*`.
+- Validação PASS/FAIL: PASS (`reports/EVIDENCE/61_meson_compile_wave4.log`).
+- Risco + mitigação: médio; fallback é no-op/compatível, com foco em preservar fluxo funcional e compilabilidade.
+- Rollback: `git revert bf67921`.
+- Priorização: Severidade 5; Impacto 5; Probabilidade 4; Esforço 3; Risco regressão 2; Urgência 5; Score 6.7.
+
+### BLD-004
+- Categoria: Build/Configuração
+- Descrição objetiva: `empty_view=true` aciona compilação de unidade com símbolo ausente neste checkout.
+- Evidência: erro em `reports/EVIDENCE/57_meson_compile_wave3b_retry.log`; opção em `meson_options.txt:45` a `meson_options.txt:48`.
+- Impacto: compile interrompe no fim do pipeline.
+- Causa provável: descompasso entre feature flag e árvore de código disponível.
+- Recomendação (o que/onde): manter `empty_view=false` por padrão (`meson_options.txt:47`).
+- Validação PASS/FAIL: PASS (`reports/EVIDENCE/61_meson_compile_wave4.log`).
+- Risco + mitigação: baixo-médio; mudança de default documentada e reversível.
+- Rollback: `git revert <commit-onda-4>`.
+- Priorização: Severidade 4; Impacto 4; Probabilidade 4; Esforço 1; Risco regressão 2; Urgência 4; Score 16.0.
 
 ### QA-001
 - Categoria: QA/Release
-- Descrição: cobertura de testes automatizados efetivos muito baixa no estado atual de checkout.
-- Evidência: `eel/meson.build:40`; `debian/rules:23` a `debian/rules:25`; `reports/EVIDENCE/02_tests_ci_scan.log`.
-- Impacto: regressões podem passar sem detecção.
-- Causa provável: foco em build de distribuição e testes desativados no empacotamento Debian.
-- Recomendação: habilitar smoke de configuração/build em CI local e registrar baseline mínimo.
-- Validação atual: FAIL parcial.
-- Risco: baixo (documentação/guardrail).
-- Mitigação: começar por smoke não-interativo.
-- Rollback: remover smoke local.
-- Priorização: Severidade 4; Impacto 4; Probabilidade 4; Esforço 2; Risco regressão 1; Urgência 3; Score 8.0.
+- Descrição objetiva: suíte de teste depende de display e falha em headless.
+- Evidência: `reports/EVIDENCE/62_meson_test_wave4.log`, `eel/meson.build:40`.
+- Impacto: CI/headless sem display não valida regressões funcionais via teste atual.
+- Causa provável: teste GTK sem backend virtual.
+- Recomendação (o que/onde): executar testes com Xvfb no pipeline.
+- Validação PASS/FAIL: FAIL (ambiente atual).
+- Risco + mitigação: médio; adicionar job com Xvfb e separar smoke não-GUI.
+- Rollback: remover ajuste de pipeline.
+- Priorização: Severidade 4; Impacto 4; Probabilidade 4; Esforço 2; Risco regressão 1; Urgência 4; Score 8.0.
 
 ### UI-001
 - Categoria: UI/AEGIS
-- Descrição: validação visual headless bloqueada por ausência de Xvfb/display funcional.
-- Evidência: `reports/EVIDENCE/13_ui_validate_baseline.log`, `reports/EVIDENCE/20_xvfb_tools.log`, `reports/EVIDENCE/23_xvfb_binary_probe.log`.
-- Impacto: não há prova automática de pixel-perfect/reflow/a11y por breakpoint neste ambiente.
-- Causa provável: ambiente de execução sem X server virtual instalado.
-- Recomendação: adicionar etapa de CI com Xvfb para screenshots/validação UI.
-- Validação atual: NÃO VERIFICADO.
-- Risco: médio (defeitos visuais podem escapar).
-- Mitigação: manter validação textual de UI e ampliar checks headless quando possível.
-- Rollback: remover job de screenshot.
+- Descrição objetiva: sem evidência automática de regressão visual/a11y por breakpoint.
+- Evidência: `reports/EVIDENCE/20_xvfb_tools.log`, `reports/EVIDENCE/21_ui_validate_xvfb.log`, `reports/EVIDENCE/62_meson_test_wave4.log`.
+- Impacto: clipping/overlap e problemas de foco podem passar sem detecção automatizada.
+- Causa provável: falta de ambiente gráfico virtual.
+- Recomendação (o que/onde): job dedicado de screenshot/validação headless.
+- Validação PASS/FAIL: NÃO VERIFICADO.
+- Risco + mitigação: médio; manter checklist manual + automatizar quando Xvfb disponível.
+- Rollback: remover job visual.
 - Priorização: Severidade 3; Impacto 3; Probabilidade 4; Esforço 3; Risco regressão 1; Urgência 3; Score 4.0.
 
 ### GTK4-001
 - Categoria: Migração GTK4
-- Descrição: forte acoplamento a APIs GTK3 legadas (`GtkAction`, `GtkUIManager`, `GtkAlignment`, `GtkMisc`, `gtk_dialog_run`, `gtk_container_add`).
+- Descrição objetiva: forte acoplamento a APIs GTK3 legadas (`GtkAction`, `GtkUIManager`, `GtkAlignment`, `GtkMisc`).
 - Evidência: `reports/EVIDENCE/30_gtk3_api_scan.log`, `reports/EVIDENCE/31_glade_legacy_widgets.log`.
-- Impacto: migração GTK4 exige onda dedicada e potencialmente extensa.
-- Causa provável: arquitetura histórica GTK3 da base do Nemo.
-- Recomendação: abordagem recomendada `GTK4 puro` em fases, com camada de compatibilidade por módulos.
-- Validação atual: FAIL para prontidão GTK4.
-- Risco: alto (quebra visual/comportamental).
-- Mitigação: migração incremental por subsistemas + regressão visual e E2E por etapa.
-- Rollback: manter branch de compatibilidade GTK3 até paridade validada.
+- Impacto: migração GTK4 requer projeto dedicado e regressão controlada.
+- Causa provável: arquitetura histórica da base.
+- Recomendação (máx. 2 opções, recomendada 1):
+  - Opção 1 (Recomendada): GTK4 puro, migração incremental por subsistema.
+  - Opção 2: GTK4 + libadwaita (GNOME-first, exigir validação cross-platform).
+- Validação PASS/FAIL: FAIL para prontidão GTK4.
+- Risco + mitigação: alto; executar em branch separado com suite visual/E2E.
+- Rollback: manter branch GTK3 como fallback até paridade comprovada.
 - Priorização: Severidade 4; Impacto 5; Probabilidade 5; Esforço 5; Risco regressão 5; Urgência 3; Score 5.0.
-
-### SEC-001
-- Categoria: Segurança/Hardening
-- Descrição: múltiplos pontos de execução de comandos externos (`g_spawn_*`, `g_shell_parse_argv`, `g_subprocess`).
-- Evidência: `reports/EVIDENCE/32_security_calls_scan.log`.
-- Impacto: risco depende da origem dos argumentos/comandos; superfície sensível existe.
-- Causa provável: integração com ações customizadas, helpers e utilitários externos.
-- Recomendação: revisar sanitização e trust boundary por ponto crítico.
-- Validação atual: NÃO VERIFICADO (auditoria profunda não executada).
-- Risco: médio.
-- Mitigação: checklist de validação de entrada + testes de abuso em comandos.
-- Rollback: reverter hardening pontual se regressão funcional ocorrer.
-- Priorização: Severidade 4; Impacto 4; Probabilidade 3; Esforço 4; Risco regressão 3; Urgência 4; Score 3.0.

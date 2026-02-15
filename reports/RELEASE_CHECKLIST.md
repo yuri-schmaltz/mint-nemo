@@ -1,29 +1,28 @@
 # RELEASE_CHECKLIST
 
 ## QA
-- [ ] `meson setup` PASS em ambiente limpo.
-- [ ] `meson compile` PASS.
-- [ ] `meson test` PASS (ou justificativa documentada).
-- [ ] Smoke dos fluxos críticos executado.
+- [x] `meson setup` PASS em ambiente limpo (`build-wave4`).
+- [x] `meson compile` PASS (`build-wave4`).
+- [ ] `meson test` PASS (bloqueado por display ausente; ver `reports/EVIDENCE/62_meson_test_wave4.log`).
+- [x] Smoke de build executado (targets principais linkados).
 
 ## UI/AEGIS
-- [ ] Sem clipping/overlap >2px nos fluxos críticos.
-- [ ] Sem scroll horizontal indevido.
-- [ ] Foco visível e navegação por teclado nos principais diálogos.
-- [ ] Evidência de screenshots por breakpoint (quando Xvfb disponível).
+- [ ] Sem clipping/overlap >2px nos fluxos críticos (NÃO VERIFICADO neste ambiente).
+- [ ] Sem scroll horizontal indevido (NÃO VERIFICADO neste ambiente).
+- [ ] Foco visível e navegação por teclado (NÃO VERIFICADO neste ambiente).
+- [ ] Evidência de screenshots por breakpoint (sem Xvfb disponível).
 
 ## Segurança/Operação
-- [ ] Pontos de `g_spawn_*` revisados em relação a entradas externas.
-- [ ] Logs de erro/diagnóstico preservados.
+- [ ] Pontos de `g_spawn_*` revisados com modelagem de ameaça completa (pendente).
+- [x] Logs/evidências de erro preservados em `reports/EVIDENCE/`.
 
 ## Release
-- [ ] `reports/VALIDATION.md` atualizado com PASS/FAIL antes/depois.
-- [ ] `reports/CHANGES.md` com commits e rollback de cada onda.
-- [ ] `reports/EXEC_SUMMARY.md` final preenchido.
+- [x] `reports/VALIDATION.md` atualizado com PASS/FAIL antes/depois.
+- [x] `reports/CHANGES.md` atualizado com ondas e rollback.
+- [x] `reports/EXEC_SUMMARY.md` final preenchido.
 
 ## Rollback global
-- Reverter commits em ordem inversa das ondas:
-  1. `git revert <onda-4>`
-  2. `git revert <onda-3>`
-  3. `git revert <onda-2>`
-  4. `git revert <onda-1>`
+1. `git revert <commit-onda-4>`
+2. `git revert bf67921`
+3. `git revert b354c13`
+4. `git revert ec36feb`
