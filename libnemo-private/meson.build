@@ -45,7 +45,6 @@ nemo_private_sources = [
   'nemo-icon-container.c',
   'nemo-icon-dnd.c',
   'nemo-icon-info.c',
-  'nemo-icon-lazy-loader.c',
   'nemo-icon-text-cache.c',
    'nemo-lazy-thumbnail-loader.c',
   'nemo-job-queue.c',

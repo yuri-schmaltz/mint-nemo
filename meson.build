@@ -20,6 +20,7 @@ conf = configuration_data()
 
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
+fs = import('fs')
 
 cc = meson.get_compiler('c')
 prefix = get_option('prefix')
@@ -186,8 +187,16 @@ subdir('libnemo-extension')
 subdir('libnemo-private')
 # subdir('po')
 subdir('src')
-subdir('search-helpers')
-subdir('test')
+if fs.is_dir('search-helpers')
+  subdir('search-helpers')
+else
+  message('Skipping optional subdir: search-helpers (not present in source tree)')
+endif
+if fs.is_dir('test')
+  subdir('test')
+else
+  message('Skipping optional subdir: test (not present in source tree)')
+endif
 subdir('docs')
 subdir('action-layout-editor')
 
