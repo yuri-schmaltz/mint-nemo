@@ -3,90 +3,76 @@
 Critério de score: `(Impacto x Probabilidade) / Esforço`.
 Escala: 1 (baixo) a 5 (alto).
 
-## Achados
-
-### BLD-001
-- Categoria: Build/Release
-- Descrição objetiva: `meson setup` quebrava por opção inexistente (`deprecated_warnings`).
-- Evidência: `meson.build:47`, `reports/EVIDENCE/14_meson_setup_baseline.log`.
-- Impacto: bloqueio total de configure/build.
-- Causa provável: `meson_options.txt` ausente no checkout.
-- Recomendação (o que/onde): manter `meson_options.txt` com todas as opções usadas (`meson_options.txt:1` a `meson_options.txt:49`).
-- Validação PASS/FAIL: PASS (`reports/EVIDENCE/60_meson_setup_wave4.log`).
-- Risco + mitigação: baixo; defaults explícitos e rollback por commit.
-- Rollback: `git revert b354c13`.
-- Priorização: Severidade 5; Impacto 5; Probabilidade 5; Esforço 1; Risco regressão 1; Urgência 5; Score 25.0.
-
-### BLD-002
-- Categoria: Build/Portabilidade
-- Descrição objetiva: `subdir('search-helpers')` e `subdir('test')` sem diretórios no checkout parcial.
-- Evidência: `meson.build:190` a `meson.build:199`, `reports/EVIDENCE/04_missing_dirs_check.log`.
-- Impacto: configure quebraria em árvores parciais.
-- Causa provável: variação de layout do source tree.
-- Recomendação (o que/onde): manter inclusão condicional com `fs.is_dir(...)` (`meson.build:190` a `meson.build:199`).
-- Validação PASS/FAIL: PASS (mensagens explícitas em `reports/EVIDENCE/60_meson_setup_wave4.log`).
-- Risco + mitigação: baixo; mensagem explícita evita ocultar ausência.
-- Rollback: `git revert bf67921`.
-- Priorização: Severidade 4; Impacto 4; Probabilidade 4; Esforço 2; Risco regressão 2; Urgência 4; Score 8.0.
-
-### BLD-003
-- Categoria: Build/Integridade de Código
-- Descrição objetiva: módulos usados em runtime estavam ausentes (`nemo-icon-text-cache`, `nemo-lazy-thumbnail-loader`).
-- Evidência: `reports/EVIDENCE/40_meson_setup_wave2.log`, `reports/EVIDENCE/50_meson_setup_wave3.log`, `libnemo-private/nemo-icon-canvas-item.c:42`, `libnemo-private/nemo-icon-container.c:41`.
-- Impacto: quebra de setup/compile.
-- Causa provável: checkout incompleto de arquivos auxiliares.
-- Recomendação (o que/onde): manter implementações fallback mínimas em `libnemo-private/nemo-icon-text-cache.*` e `libnemo-private/nemo-lazy-thumbnail-loader.*`.
-- Validação PASS/FAIL: PASS (`reports/EVIDENCE/61_meson_compile_wave4.log`).
-- Risco + mitigação: médio; fallback é no-op/compatível, com foco em preservar fluxo funcional e compilabilidade.
-- Rollback: `git revert bf67921`.
-- Priorização: Severidade 5; Impacto 5; Probabilidade 4; Esforço 3; Risco regressão 2; Urgência 5; Score 6.7.
-
-### BLD-004
-- Categoria: Build/Configuração
-- Descrição objetiva: `empty_view=true` aciona compilação de unidade com símbolo ausente neste checkout.
-- Evidência: erro em `reports/EVIDENCE/57_meson_compile_wave3b_retry.log`; opção em `meson_options.txt:45` a `meson_options.txt:48`.
-- Impacto: compile interrompe no fim do pipeline.
-- Causa provável: descompasso entre feature flag e árvore de código disponível.
-- Recomendação (o que/onde): manter `empty_view=false` por padrão (`meson_options.txt:47`).
-- Validação PASS/FAIL: PASS (`reports/EVIDENCE/61_meson_compile_wave4.log`).
-- Risco + mitigação: baixo-médio; mudança de default documentada e reversível.
-- Rollback: `git revert <commit-onda-4>`.
-- Priorização: Severidade 4; Impacto 4; Probabilidade 4; Esforço 1; Risco regressão 2; Urgência 4; Score 16.0.
-
-### QA-001
+## BKL-001
 - Categoria: QA/Release
-- Descrição objetiva: suíte de teste depende de display e falha em headless.
-- Evidência: `reports/EVIDENCE/62_meson_test_wave4.log`, `eel/meson.build:40`.
-- Impacto: CI/headless sem display não valida regressões funcionais via teste atual.
-- Causa provável: teste GTK sem backend virtual.
-- Recomendação (o que/onde): executar testes com Xvfb no pipeline.
-- Validação PASS/FAIL: FAIL (ambiente atual).
-- Risco + mitigação: médio; adicionar job com Xvfb e separar smoke não-GUI.
-- Rollback: remover ajuste de pipeline.
-- Priorização: Severidade 4; Impacto 4; Probabilidade 4; Esforço 2; Risco regressão 1; Urgência 4; Score 8.0.
+- Descrição objetiva: `meson test` falha em ambiente headless por dependência de display GTK.
+- Evidência: `reports/EVIDENCE/20260215_meson_test_baseline.log`, `reports/EVIDENCE/20260215_eel_meson_lines.txt`.
+- Impacto: cobertura de regressão automática fica incompleta em ambientes sem display.
+- Causa provável: teste `Eel test` executa binário GTK sem backend virtual.
+- Recomendação (o que e onde): pipeline de teste com display virtual (Xvfb ou equivalente) no job de testes GTK.
+- Validação PASS/FAIL: FAIL no ambiente atual.
+- Risco + mitigação: risco médio; mitigar separando smoke CLI (sempre) e testes GUI (headless virtual).
+- Rollback: remover etapa headless do pipeline (`git revert <commit-da-implementacao>`).
+- Priorização: Severidade 5; Impacto 5; Probabilidade 5; Esforço 2; Risco de regressão 1; Urgência 5; Score 12.5.
 
-### UI-001
+## BKL-002
+- Categoria: Observabilidade/Diagnóstico
+- Descrição objetiva: há logging extenso (`g_warning`, `g_message`, `g_critical`), mas sem plano explícito de coleta padronizada por cenário de release.
+- Evidência: `reports/EVIDENCE/20260215_observability_scan.log`.
+- Impacto: diagnóstico pós-incidente mais lento e inconsistente entre ambientes.
+- Causa provável: instrumentação existe, mas sem runbook consolidado de coleta.
+- Recomendação (o que e onde): padronizar comando de coleta de logs por fluxo crítico no checklist de release.
+- Validação PASS/FAIL: FAIL parcial (instrumentação existe, runbook não formalizado no baseline).
+- Risco + mitigação: baixo; manter mudanças restritas a documentação/processo.
+- Rollback: reverter atualização de checklist/runbook (`git revert <commit-da-implementacao>`).
+- Priorização: Severidade 3; Impacto 3; Probabilidade 4; Esforço 1; Risco de regressão 1; Urgência 3; Score 12.0.
+
+## BKL-003
+- Categoria: Segurança
+- Descrição objetiva: execução de comandos externos sensíveis via spawn (`pkexec nemo --fix-cache`, terminal launcher, exec de extensões).
+- Evidência: `reports/EVIDENCE/20260215_thumbnail_fixcache_lines.txt`, `reports/EVIDENCE/20260215_nemo_view_spawn_lines.txt`, `reports/EVIDENCE/20260215_window_menus_spawn_lines.txt`, `reports/EVIDENCE/20260215_extensions_list_spawn_lines.txt`.
+- Impacto: superfície de risco em fluxos privilegiados/execução externa.
+- Causa provável: requisitos funcionais de integração com terminal/admin e extensões.
+- Recomendação (o que e onde): endurecer validação de origem e argumentos antes de spawn, com logs de auditoria mínimos.
+- Validação PASS/FAIL: NÃO VERIFICADO (análise estática; sem exploração dinâmica nesta execução).
+- Risco + mitigação: risco médio; mitigar com allowlist de binários e validação explícita de entradas.
+- Rollback: reverter endurecimento específico de spawn (`git revert <commit-da-implementacao>`).
+- Priorização: Severidade 4; Impacto 4; Probabilidade 3; Esforço 3; Risco de regressão 2; Urgência 4; Score 4.0.
+
+## BKL-004
+- Categoria: Desktop/Compatibilidade
+- Descrição objetiva: não foram encontradas evidências de servidor de rede local embutido (`localhost`, `listen`, `socket`) no escopo varrido.
+- Evidência: `reports/EVIDENCE/20260215_desktop_network_scan.log` (`NO_MATCH`).
+- Impacto: positivo para superfície de ataque de rede local.
+- Causa provável: arquitetura focada em desktop local/DBus/GIO, sem daemon HTTP local.
+- Recomendação (o que e onde): manter regra de não abrir portas locais por padrão; validar em revisão de PRs.
+- Validação PASS/FAIL: PASS.
+- Risco + mitigação: baixo; risco de regressão caso novos módulos adicionem listener sem guardrail.
+- Rollback: não aplicável (achado informativo).
+- Priorização: Severidade 2; Impacto 2; Probabilidade 2; Esforço 1; Risco de regressão 1; Urgência 2; Score 4.0.
+
+## BKL-005
 - Categoria: UI/AEGIS
-- Descrição objetiva: sem evidência automática de regressão visual/a11y por breakpoint.
-- Evidência: `reports/EVIDENCE/20_xvfb_tools.log`, `reports/EVIDENCE/21_ui_validate_xvfb.log`, `reports/EVIDENCE/62_meson_test_wave4.log`.
-- Impacto: clipping/overlap e problemas de foco podem passar sem detecção automatizada.
-- Causa provável: falta de ambiente gráfico virtual.
-- Recomendação (o que/onde): job dedicado de screenshot/validação headless.
+- Descrição objetiva: sem baseline visual automatizado por breakpoint, portanto clipping/overlap/foco não foram comprovados nesta execução.
+- Evidência: `reports/EVIDENCE/20260215_nemo_quit_xvfb.log`, `reports/EVIDENCE/20260215_ui_files.log`.
+- Impacto: regressões visuais/a11y podem passar sem detecção automática.
+- Causa provável: ausência de backend gráfico virtual no ambiente.
+- Recomendação (o que e onde): adicionar etapa de screenshot headless na infraestrutura de QA visual.
 - Validação PASS/FAIL: NÃO VERIFICADO.
-- Risco + mitigação: médio; manter checklist manual + automatizar quando Xvfb disponível.
-- Rollback: remover job visual.
-- Priorização: Severidade 3; Impacto 3; Probabilidade 4; Esforço 3; Risco regressão 1; Urgência 3; Score 4.0.
+- Risco + mitigação: risco médio; mitigar com checklist manual até automação.
+- Rollback: remover etapa visual de CI (`git revert <commit-da-implementacao>`).
+- Priorização: Severidade 3; Impacto 4; Probabilidade 4; Esforço 3; Risco de regressão 1; Urgência 3; Score 5.3.
 
-### GTK4-001
+## BKL-006
 - Categoria: Migração GTK4
-- Descrição objetiva: forte acoplamento a APIs GTK3 legadas (`GtkAction`, `GtkUIManager`, `GtkAlignment`, `GtkMisc`).
-- Evidência: `reports/EVIDENCE/30_gtk3_api_scan.log`, `reports/EVIDENCE/31_glade_legacy_widgets.log`.
-- Impacto: migração GTK4 requer projeto dedicado e regressão controlada.
-- Causa provável: arquitetura histórica da base.
-- Recomendação (máx. 2 opções, recomendada 1):
-  - Opção 1 (Recomendada): GTK4 puro, migração incremental por subsistema.
-  - Opção 2: GTK4 + libadwaita (GNOME-first, exigir validação cross-platform).
-- Validação PASS/FAIL: FAIL para prontidão GTK4.
-- Risco + mitigação: alto; executar em branch separado com suite visual/E2E.
-- Rollback: manter branch GTK3 como fallback até paridade comprovada.
-- Priorização: Severidade 4; Impacto 5; Probabilidade 5; Esforço 5; Risco regressão 5; Urgência 3; Score 5.0.
+- Descrição objetiva: codebase ainda fortemente acoplada a APIs GTK3 legadas (`gtk_container_add`, `gtk_box_pack_start`, `gtk_dialog_run`, `gtk_bin_get_child`, `GtkTreeView`).
+- Evidência: `reports/EVIDENCE/20260215_gtk3_api.log`, `meson.build:73`.
+- Impacto: migração GTK4 exige projeto dedicado com alto risco de regressão.
+- Causa provável: histórico arquitetural e escopo amplo da aplicação desktop.
+- Recomendação (máx. 2 opções; recomendada 1):
+  Opção 1 (Recomendada): GTK4 puro incremental por subsistema e feature flags.
+  Opção 2: GTK4 + libadwaita (GNOME-first), com validação explícita em ambientes não-GNOME.
+- Validação PASS/FAIL: FAIL para prontidão imediata GTK4.
+- Risco + mitigação: risco alto; mitigar com branch dedicada, suite visual e gates por onda.
+- Rollback: manter branch GTK3 como fallback até paridade validada.
+- Priorização: Severidade 4; Impacto 5; Probabilidade 5; Esforço 5; Risco de regressão 5; Urgência 3; Score 5.0.
