@@ -1,0 +1,53 @@
+[DATE]
+2026-02-15T20:23:59-03:00
+
+[UI_VALIDATE_XVFB_AFTER_INSTALL]
+[gtk-builder-tool version]
+
+(gtk-builder-tool:3468893): dbind-WARNING **: 20:23:41.954: Couldn't connect to accessibility bus: Failed to connect to socket /run/user/1000/at-spi/bus_0: No such file or directory
+Usage:
+  gtk-builder-tool [COMMAND] FILE
+
+Commands:
+  validate           Validate the file
+  simplify [OPTIONS] Simplify the file
+  enumerate          List all named objects
+  preview [OPTIONS]  Preview the file
+
+Simplify Options:
+  --replace          Replace the file
+
+Preview Options:
+  --id=ID            Preview only the named object
+  --css=FILE         Use style from CSS file
+
+Perform various tasks on GtkBuilder .ui files.
+
+[validate gresources/*.glade *.ui under xvfb]
+--- gresources/nemo-action-layout-editor.glade
+
+(gtk-builder-tool:3468913): dbind-WARNING **: 20:23:42.223: Couldn't connect to accessibility bus: Failed to connect to socket /run/user/1000/at-spi/bus_0: No such file or directory
+--- gresources/nemo-bookmarks-window.glade
+
+(gtk-builder-tool:3468935): dbind-WARNING **: 20:23:42.497: Couldn't connect to accessibility bus: Failed to connect to socket /run/user/1000/at-spi/bus_0: No such file or directory
+--- gresources/nemo-desktop-overlay.glade
+
+(gtk-builder-tool:3468956): dbind-WARNING **: 20:23:42.744: Couldn't connect to accessibility bus: Failed to connect to socket /run/user/1000/at-spi/bus_0: No such file or directory
+gresources/nemo-desktop-overlay.glade:137:1 Invalid object type 'XAppGtkWindow'
+--- gresources/nemo-desktop-preferences.glade
+
+(gtk-builder-tool:3468977): dbind-WARNING **: 20:23:42.989: Couldn't connect to accessibility bus: Failed to connect to socket /run/user/1000/at-spi/bus_0: No such file or directory
+--- gresources/nemo-file-management-properties.glade
+
+(gtk-builder-tool:3468998): dbind-WARNING **: 20:23:43.230: Couldn't connect to accessibility bus: Failed to connect to socket /run/user/1000/at-spi/bus_0: No such file or directory
+gresources/nemo-file-management-properties.glade:397:1 Invalid object type 'XAppStackSidebar'
+--- gresources/nemo-search-bar.glade
+
+(gtk-builder-tool:3469035): dbind-WARNING **: 20:23:43.487: Couldn't connect to accessibility bus: Failed to connect to socket /run/user/1000/at-spi/bus_0: No such file or directory
+--- gresources/nemo-shortcuts.ui
+
+(gtk-builder-tool:3469059): dbind-WARNING **: 20:23:43.758: Couldn't connect to accessibility bus: Failed to connect to socket /run/user/1000/at-spi/bus_0: No such file or directory
+
+[NOTES]
+gtk-builder-tool validate em modo isolado não carrega tipos customizados XApp; por isso aparecem 'Invalid object type'.
+Isso não implica falha funcional do app completo; valida apenas limitação do harness estático.

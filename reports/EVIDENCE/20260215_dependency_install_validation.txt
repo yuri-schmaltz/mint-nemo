@@ -1,0 +1,74 @@
+[DATE]
+2026-02-15T20:23:29-03:00
+
+[XVFB_BINARIES]
+/home/yurix/.local/bin/Xvfb
+/home/yurix/.local/bin/xvfb-run
+-rwxrwxr-x 1 yurix yurix 76 Feb 15 20:10 /home/yurix/.local/bin/Xvfb
+-rwxrwxr-x 1 yurix yurix 80 Feb 15 20:10 /home/yurix/.local/bin/xvfb-run
+-rwxr-xr-x 1 yurix yurix 2064864 Oct 23 14:29 /home/yurix/.local/opt/xvfb-deb/root/usr/bin/Xvfb
+-rwxr-xr-x 1 yurix yurix    5701 Oct 23 14:29 /home/yurix/.local/opt/xvfb-deb/root/usr/bin/xvfb-run
+
+[PIXI_GLOBAL]
+Global environments as specified in '/home/yurix/.pixi/manifests/pixi-global.toml'
+├── xorg-x11-server-xvfb-conda-x86_64: 1.20.4 
+│   └─ exposes: Xvfb, xvfb-run
+└── xvfb-cos7 
+    ├─ dependencies: xorg-x11-server-xvfb-cos7-x86_64 1.20.4
+    └─ exposes: Xvfb-cos7 -> Xvfb, xvfb-run-cos7 -> xvfb-run
+
+[MESON_TEST_PLAIN]
+>>> MALLOC_PERTURB_=14 ASAN_OPTIONS=halt_on_error=1:abort_on_error=1:print_summary=1 UBSAN_OPTIONS=halt_on_error=1:abort_on_error=1:print_summary=1:print_stacktrace=1 /home/yurix/Documentos/mint-nemo/build-orch-baseline/eel/check-program --g-fatal-warnings --sm-disable
+――――――――――――――――――――――――――――――――――――― ✀  ―――――――――――――――――――――――――――――――――――――
+stderr:
+
+(check-program:3439036): dbind-WARNING **: 20:02:50.974: Couldn't connect to accessibility bus: Failed to connect to socket /run/user/1000/at-spi/bus_0: No such file or directory
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+
+Summary of Failures:
+
+1/1 Eel test FAIL            0.28s   killed by signal 5 SIGTRAP
+
+Ok:                 0   
+Expected Fail:      0   
+Fail:               1   
+Unexpected Pass:    0   
+Skipped:            0   
+Timeout:            0   
+
+Full log written to /home/yurix/Documentos/mint-nemo/build-orch-baseline/meson-logs/testlog.txt
+
+[MESON_TEST_DBUS_XVFB]
+ninja: Entering directory `/home/yurix/Documentos/mint-nemo/build-orch-baseline'
+ninja: no work to do.
+dbus-daemon[3462702]: [session uid=1000 pid=3462702] Activating service name='org.gtk.vfs.Daemon' requested by ':1.0' (uid=1000 pid=3462741 comm="/home/yurix/Documentos/mint-nemo/build-orch-baseli" label="unconfined")
+dbus-daemon[3462702]: [session uid=1000 pid=3462702] Successfully activated service 'org.gtk.vfs.Daemon'
+dbus-daemon[3462702]: [session uid=1000 pid=3462702] Activating service name='org.a11y.Bus' requested by ':1.2' (uid=1000 pid=3462741 comm="/home/yurix/Documentos/mint-nemo/build-orch-baseli" label="unconfined")
+fusermount3: failed to access mountpoint /run/user/1000/gvfs: Permission denied
+dbus-daemon[3462702]: [session uid=1000 pid=3462702] Successfully activated service 'org.a11y.Bus'
+1/1 Eel test OK              0.12s
+
+Ok:                 1   
+Expected Fail:      0   
+Fail:               0   
+Unexpected Pass:    0   
+Skipped:            0   
+Timeout:            0   
+
+Full log written to /home/yurix/Documentos/mint-nemo/build-orch-baseline/meson-logs/testlog.txt
+A connection to the bus can't be made
+
+[MESON_TEST_XVFB_NO_AT_BRIDGE]
+ninja: Entering directory `/home/yurix/Documentos/mint-nemo/build-orch-baseline'
+ninja: no work to do.
+1/1 Eel test OK              0.09s
+
+Ok:                 1   
+Expected Fail:      0   
+Fail:               0   
+Unexpected Pass:    0   
+Skipped:            0   
+Timeout:            0   
+
+Full log written to /home/yurix/Documentos/mint-nemo/build-orch-baseline/meson-logs/testlog.txt
